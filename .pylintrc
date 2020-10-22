@@ -149,7 +149,9 @@ disable=print-statement,
         trailing-newlines,
         trailing-whitespace,
         no-else-return,
-        too-many-return-statements
+        too-many-return-statements,
+        bare-except,
+        wrong-import-order
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
