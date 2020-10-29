@@ -43,20 +43,22 @@ class myThread(threading.Thread):  # 继承父类threading.Thread
     def run(self):  # 把要执行的代码写到run函数里面 线程在创建后会直接运行run函数
         loadDateNews(self.date,self.newsSet)
 
-myclient = pymongo.MongoClient("mongodb://localhost/")
-mydb = myclient["StaticNews"]
-newsSet=mydb["news"]
 
-monthday=['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16',
+if __name__ == "__main__":
+    myclient = pymongo.MongoClient("mongodb://localhost/")
+    mydb = myclient["StaticNews"]
+    newsSet=mydb["news"]
+
+    monthday=['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16',
           '17','18','19','20','21','22','23','24','25','26','27','28','29','30','31']
 
-# 创建新线程
-threads=[]
-for i in range(0,30):
-    tempThread=myThread(i,f"202008{monthday[i]}",newsSet)
-    tempThread.start()
-    threads.append(tempThread)
+    # 创建新线程
+    threads=[]
+    for i in range(0,30):
+        tempThread=myThread(i,f"202008{monthday[i]}",newsSet)
+        tempThread.start()
+        threads.append(tempThread)
 
-for tempThread in threads:
-    tempThread.join()
+    for tempThread in threads:
+        tempThread.join()
 
