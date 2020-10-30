@@ -22,3 +22,4 @@ if __name__ == "__main__":
         else:
             continue
     print(mydb.list_collection_names())
+	myclient.close()
