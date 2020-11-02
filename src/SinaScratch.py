@@ -19,9 +19,7 @@ def analyzeSinaUrl(url):
     title = soup.select('.main-title')[0].text
     publish_time = soup.select('.date-source span')[0].text
     publish_time = datetime.strptime(publish_time, '%Y年%m月%d日 %H:%M')
-    print(publish_time)
     publish_time.strftime('%Y-%m-%d')
-    print(publish_time)
     source =soup.select('.date-source span')[1].text  # 获取新闻来源
     images=soup.select("div.img_wrapper >img")
     imagesurl = []
@@ -32,14 +30,12 @@ def analyzeSinaUrl(url):
         top_imageurl = imagesurl[0]
     article = []  # 获取文章内容
     for p in soup.select('div.article >p'):
-        article.append(p.text)
-        print(p.text)
+        article.append(p.text[2:])
     articleall = ''.join(article)
-
     res_dict = {
         'url': url,
         'title': title,
-        'publish_time': publish_time,
+        'publish_time': publish_time.__format__('%Y-%m-%d %H:%M:%S'),
         'content': articleall,
         'category': "",
         'source': source,
