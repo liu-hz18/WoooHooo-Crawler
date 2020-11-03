@@ -54,8 +54,8 @@ if __name__ == "__main__":
 
     # 创建新线程
     threads=[]
-    for i in range(0,30):
-        tempThread=myThread(i,f"202008{monthday[i]}",newsSet)
+    for i in range(0,31):
+        tempThread=myThread(i,f"202010{monthday[i]}",newsSet)
         tempThread.start()
         threads.append(tempThread)
 

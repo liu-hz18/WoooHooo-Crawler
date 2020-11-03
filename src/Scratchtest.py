@@ -6,7 +6,6 @@ import json
 def getHTMLText(url):
     try:
         r = requests.get(url, timeout = 30,allow_redirects=False)
-        r.encoding = 'utf-8'
         r.raise_for_status()
         return r.text
     except:
@@ -80,7 +79,7 @@ def loadWithTime(url):
         'publish_time': time,
         'content': textcontent,
         'category': catalog,
-        'source':source,
+        'source':"腾讯"+source,
         'imageurl':imagesurl,
         'top_img':top_image
     }
