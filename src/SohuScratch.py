@@ -3,6 +3,7 @@ import demjson
 from bs4 import BeautifulSoup
 import json
 from datetime import datetime
+import time
 
 def getHTMLText(url):
     try:
@@ -50,4 +51,29 @@ def analyzeSohuUrl(url):
     print(res_dict)
     return res_dict
 
-analyzeSohuUrl("https://www.sohu.com/a/428821376_116237?spm=smpc.home.top-news2.4.1604285159855M0RnufR&_f=index_news_3")
+#analyzeSohuUrl("https://www.sohu.com/a/428821376_116237?spm=smpc.home.top-news2.4.1604285159855M0RnufR&_f=index_news_3")
+def loadSohuNewsList():
+    base_url="https://www.sohu.com/"
+    html = getHTMLText(base_url)
+    soup = BeautifulSoup(html, "html.parser")
+    urls = []
+    partyNews = soup.select("div.news > p > a")
+    for News in partyNews:
+        urls.append(News.get("href"))
+    topNews = soup.select("div.list16 > ul > li > a")
+    for News in topNews:
+        urls.append(News.get("href"))
+    print(urls)
+    print(len(urls))
+    newsList=[]
+    for url in urls:
+        try:
+            news = analyzeSohuUrl(url)
+            newsList.append(news)
+            time.sleep(0.3)
+        except:
+            continue
+    print(newsList)
+    print(len(newsList))
+
+loadSohuNewsList()
