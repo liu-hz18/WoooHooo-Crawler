@@ -10,8 +10,9 @@ import random
 #模拟访问腾讯新闻各个首页
 def loadTencentNews():
     #各种频道
-    channels=['24hours','video','milite','cul','nstock','comic','emotion','digi','health',
-             'history','politics','zfw','newssh','edu','licai','sports','ent','world','tech','finance']
+    channels = ['24hours', 'video', 'milite', 'cul', 'nstock', 'comic', 'house', 'emotion', 'digi', 'astro', 'health',
+                'visit', 'baby', 'pet', 'history', 'politics', 'zfw', 'football', 'newssh', 'rushidao', 'edu', 'licai',
+                'sports', 'life', 'kepu', 'ent', 'antip', 'bj', 'world', 'tech', 'finance', 'auto', 'fashion', 'games']
     baseurls = " https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?"
     headers = {
         'accept': '*/*',

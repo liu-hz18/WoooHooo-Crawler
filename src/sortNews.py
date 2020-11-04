@@ -15,8 +15,5 @@ if __name__ == "__main__":
         count = count + 1
         if count % 10000 == 0:
             print(count)
-    #newsCopy = myclient["NewsCopy"]
-    #saveCopy = newsCopy["news"]
-    #x = saveCopy.insert_many(mydata)
 
 
