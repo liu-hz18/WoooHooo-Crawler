@@ -1,13 +1,13 @@
 import requests
 import demjson
-from bs4 import BeautifulSoup
 import json
 from Scratchtest import *
+from bs4 import BeautifulSoup
 import pymongo
 import time
 import random
-from datetime import datetime
 
+#模拟访问腾讯新闻各个首页
 def loadTencentNews():
     #各种频道
     channels=['24hours','video','milite','cul','nstock','comic','house','emotion','digi','astro','health',
@@ -46,56 +46,32 @@ def loadTencentNews():
     return list(set(urls))
 
 #处理热点新闻列表
-def handleTencentNewslist(urls):
+def handleNewslist(type,urls):
     updatedNews=[]
     for url in urls:
-        try:
-            news=loadWithTime(url)
-            updatedNews.append(news)
-        except:
-            continue
+        if type == 0:
+            try:
+                news = loadWithTime(url)
+                updatedNews.append(news)
+            except:
+                continue
+        elif type == 1:
+            try:
+                news = analyzeSinaUrl(url)
+                updatedNews.append(news)
+                time.sleep(0.3)
+            except:
+                continue
+        elif type == 2:
+            try:
+                news = analyzeSohuUrl(url)
+                updatedNews.append(news)
+                time.sleep(0.3)
+            except:
+                continue
     return updatedNews
 
-def getstandardHTMLText(url):
-    try:
-        r = requests.get(url, timeout = 30,allow_redirects=False)
-        r.encoding = 'utf-8'
-        r.raise_for_status()
-        return r.text
-    except:
-        return ""
-
-def analyzeSinaUrl(url):
-    html = getstandardHTMLText(url)
-    soup = BeautifulSoup(html, "html.parser")
-    title = soup.select('.main-title')[0].text
-    publish_time = soup.select('.date-source span')[0].text
-    publish_time = datetime.strptime(publish_time, '%Y年%m月%d日 %H:%M')
-    publish_time.strftime('%Y-%m-%d')
-    source =soup.select('.date-source span')[1].text  # 获取新闻来源
-    images=soup.select("div.img_wrapper >img")
-    imagesurl = []
-    for image in images:
-        imagesurl.append(image.get('src'))
-    top_imageurl = ""
-    if len(imagesurl)!=0:
-        top_imageurl = imagesurl[0]
-    article = []  # 获取文章内容
-    for p in soup.select('div.article >p'):
-        article.append(p.text[2:])
-    articleall = ''.join(article)
-    res_dict = {
-        'url': url,
-        'title': title,
-        'publish_time': publish_time.__format__('%Y-%m-%d %H:%M:%S'),
-        'content': articleall,
-        'category': "",
-        'source': "新浪"+source,
-        'imageurl': imagesurl,
-        'top_img': top_imageurl
-    }
-    return res_dict
-
+#模拟访问新浪新闻滚动新闻页面
 def loadSinaNewsList():
     #     "2509": "全部",
     #     "2510": "国内",
@@ -128,16 +104,19 @@ def loadSinaNewsList():
             url_list.append(news['url'])
     return url_list
 
-def handleSinaNewslist(urls):
-    updatedNews=[]
-    for url in urls:
-        try:
-            news=analyzeSinaUrl(url)
-            updatedNews.append(news)
-            time.sleep(0.3)
-        except:
-            continue
-    return updatedNews
+#analyzeSohuUrl("https://www.sohu.com")
+def loadSohuNewsList():
+    base_url="https://www.sohu.com/"
+    html = getstandardHTMLText(base_url)
+    soup = BeautifulSoup(html, "html.parser")
+    urls = []
+    partyNews = soup.select("div.news > p > a")
+    for News in partyNews:
+        urls.append(News.get("href"))
+    topNews = soup.select("div.list16 > ul > li > a")
+    for News in topNews:
+        urls.append(News.get("href"))
+    return urls
 
 if __name__ == "__main__":
     #myclient = pymongo.MongoClient("mongodb://localhost/")
@@ -149,6 +128,7 @@ if __name__ == "__main__":
     while True:
         updatedurls = loadTencentNews()
         sinaUrl = loadSinaNewsList()
+        sohuUrl = loadSohuNewsList()
         #腾讯新闻去重
         for url in updatedurls:
             if url in totalurls:
@@ -162,11 +142,20 @@ if __name__ == "__main__":
                 sinaUrl.remove(url)
             else:
                 totalurls.append(url)
+        #搜狐新闻去重
+        for url in sohuUrl:
+            if url in totalurls:
+                sohuUrl.remove(url)
+            else:
+                totalurls.append(url)
+
         updatedNews = []
         if len(updatedurls)!=0:
-            updatedNews.extend(handleTencentNewslist(updatedurls))
+            updatedNews.extend(handleNewslist(0,updatedurls))
         if len(sinaUrl)!=0:
-            updatedNews.extend(handleSinaNewslist(sinaUrl))
+            updatedNews.extend(handleNewslist(1,sinaUrl))
+        if len(sohuUrl)!=0:
+            updatedNews.extend(handleNewslist(2,sohuUrl))
         print(updatedNews)
         #if len(updatedNews)!=0:
             #y = Staticsave.insert_many(newsSet.find())

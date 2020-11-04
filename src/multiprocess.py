@@ -6,13 +6,6 @@ def loadDateNews(date,newsSet):
     baseUrl='https://new.qq.com/omn/'+date+'/'+date+'A0'
     tailUrl='00.html'
     count=0
-    #with open(f"newsData/{date}.json", 'r', encoding='utf-8') as load_f:
-        #strF = load_f.read()
-        #if len(strF) > 0:
-            #dateNews = json.loads(strF)
-        #else:
-            #dateNews = []
-    #print(len(dateNews))
     elementList = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
                    'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     for i in elementList:
@@ -30,8 +23,6 @@ def loadDateNews(date,newsSet):
                         continue
             print(date+":"+str(count))
             x = newsSet.insert_many(dateNews)
-            #with open(f"newsData/{date}.json", 'w', encoding='utf-8') as json_file:
-                #json.dump(dateNews, json_file, ensure_ascii=False)
 
 class myThread(threading.Thread):  # 继承父类threading.Thread
     def __init__(self, threadID, date,newsSet):
