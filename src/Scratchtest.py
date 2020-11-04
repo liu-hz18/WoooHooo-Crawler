@@ -50,7 +50,7 @@ def loadWithTime(url):
         'publish_time': time,
         'content': textcontent,
         'category': catalog,
-        'source':"腾讯"+source,
+        'source':"腾讯："+source,
         'imageurl':imagesurl,
         'top_img':top_image
     }
@@ -82,7 +82,7 @@ def analyzeSinaUrl(url):
         'publish_time': publish_time.__format__('%Y-%m-%d %H:%M:%S'),
         'content': articleall,
         'category': "",
-        'source': "新浪"+source,
+        'source': "新浪："+source,
         'imageurl': imagesurl,
         'top_img': top_imageurl
     }
@@ -119,11 +119,47 @@ def analyzeSohuUrl(url):
         'publish_time': publish_time,
         'content': articleall,
         'category': "",
-        'source': source,
+        'source': "搜狐："+source,
         'imageurl': imagesurl,
         'top_img': top_imageurl
     }
-    print(res_dict)
+    return res_dict
+
+#解析网易新闻
+def analyzeWangyiUrl(url):
+    html = getHTMLText(url)
+    soup = BeautifulSoup(html, "html.parser")
+    title = soup.select('div.post_main > h1')[0].text
+    sourcetime = soup.select('div.post_info')[0].text
+    sourcetime = sourcetime.strip()
+    publish_time = sourcetime[0:19]
+    source = sourcetime[20:]
+    source = source.replace(" ","")
+    source = source[0:-2]
+    article = []  # 获取文章内容
+    p = soup.select('div.post_body >p')
+    for singleP in p:
+        if singleP.text != "":
+            article.append(singleP.text[2:])
+    articleall = ''.join(article)
+    articleall.strip()
+    images = soup.select("div.post_body > p >img")
+    imagesurl = []
+    for image in images:
+        imagesurl.append(image.get('src'))
+    top_imageurl = ""
+    if len(imagesurl) != 0:
+        top_imageurl = imagesurl[0]
+    res_dict = {
+        'url': url,
+        'title': title,
+        'publish_time': publish_time,
+        'content': articleall,
+        'category': "",
+        'source': "网易："+source,
+        'imageurl': imagesurl,
+        'top_img': top_imageurl
+    }
     return res_dict
 
 #得到四位随机数序列的所有组合形式

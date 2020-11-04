@@ -10,9 +10,8 @@ import random
 #模拟访问腾讯新闻各个首页
 def loadTencentNews():
     #各种频道
-    channels=['24hours','video','milite','cul','nstock','comic','house','emotion','digi','astro','health',
-             'visit','baby','pet','history','politics','zfw','football','newssh','rushidao','edu','licai',
-             'sports','life','kepu','ent','antip','bj','world','tech','finance','auto','fashion','games']
+    channels=['24hours','video','milite','cul','nstock','comic','emotion','digi','health',
+             'history','politics','zfw','newssh','edu','licai','sports','ent','world','tech','finance']
     baseurls = " https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?"
     headers = {
         'accept': '*/*',
@@ -59,14 +58,21 @@ def handleNewslist(type,urls):
             try:
                 news = analyzeSinaUrl(url)
                 updatedNews.append(news)
-                time.sleep(0.3)
+                time.sleep(0.1)
             except:
                 continue
         elif type == 2:
             try:
                 news = analyzeSohuUrl(url)
                 updatedNews.append(news)
-                time.sleep(0.3)
+                time.sleep(0.1)
+            except:
+                continue
+        elif type ==3:
+            try:
+                news = analyzeWangyiUrl(url)
+                updatedNews.append(news)
+                time.sleep(0.1)
             except:
                 continue
     return updatedNews
@@ -118,6 +124,21 @@ def loadSohuNewsList():
         urls.append(News.get("href"))
     return urls
 
+#得到网易新闻列表中url
+def loadWangyiNewsList():
+    base_url = 'https://temp.163.com/special/00804KVA/cm_yaowen20200213_0{}.js?callback=data_callback'
+    url_list = []
+    page = 2
+    for i in range(2,page+1):
+        url = base_url.format(i)
+        response = requests.get(url)
+        content = response.text
+        result = eval(eval((json.dumps(content)).replace('data_callback(','').replace(')','').replace(' ','')))
+        for news in result:
+            url_list.append(news["docurl"])
+    return url_list
+
+
 if __name__ == "__main__":
     #myclient = pymongo.MongoClient("mongodb://localhost/")
     #mydb = myclient["DynamicNews"]
@@ -129,6 +150,7 @@ if __name__ == "__main__":
         updatedurls = loadTencentNews()
         sinaUrl = loadSinaNewsList()
         sohuUrl = loadSohuNewsList()
+        wangyiUrl = loadWangyiNewsList()
         #腾讯新闻去重
         for url in updatedurls:
             if url in totalurls:
@@ -148,6 +170,12 @@ if __name__ == "__main__":
                 sohuUrl.remove(url)
             else:
                 totalurls.append(url)
+        #网易新闻去重
+        for url in wangyiUrl:
+            if url in totalurls:
+                wangyiUrl.remove(url)
+            else:
+                totalurls.append(url)
 
         updatedNews = []
         if len(updatedurls)!=0:
@@ -156,6 +184,8 @@ if __name__ == "__main__":
             updatedNews.extend(handleNewslist(1,sinaUrl))
         if len(sohuUrl)!=0:
             updatedNews.extend(handleNewslist(2,sohuUrl))
+        if len(wangyiUrl)!=0:
+            updatedNews.extend(handleNewslist(3,wangyiUrl))
         print(updatedNews)
         #if len(updatedNews)!=0:
             #y = Staticsave.insert_many(newsSet.find())
@@ -163,7 +193,7 @@ if __name__ == "__main__":
             #x = newsSet.insert_many(updatedNews)
             #print(len(updatedNews))
         print("epoch end")
-        time.sleep(120)
+        time.sleep(60)
 
 
 
