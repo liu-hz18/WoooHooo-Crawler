@@ -141,43 +141,35 @@ def loadWangyiNewsList():
 
 
 if __name__ == "__main__":
-    #myclient = pymongo.MongoClient("mongodb://localhost/")
+    myclient = pymongo.MongoClient("mongodb://localhost/")
     #mydb = myclient["DynamicNews"]
-    #newsSet=mydb["news"]
-    totalurls=[]
-    #Staticdb=myclient["StaticNews"]
-    #Staticsave=Staticdb["news"]
+    #newsSet = mydb["news"]
+    Staticdb = myclient["NewsCopy"]
+    Staticsave = Staticdb["news"]
+    type_map = {
+        "politics": "politics",  # 国内
+        "history": "history",  # 文化
+        "social": "social",  # 社会
+        "cul": "social",
+        "chuguo": "chuguo",
+        "world": "chuguo",  # 国际
+        "mil": "mil",  # 军事
+        "finance": "finance",  # 财经
+        "ent": "ent",  # 娱乐
+        "travel": "ent",
+        "comic": "ent",
+        "sports": "sports",  # 体育
+        "science": "science",  # 科技
+        "digi": "science",
+        "digital": "science",
+        "tech": "science",
+        "game": "game",  # 游戏
+    }
     while True:
         updatedurls = loadTencentNews()
         sinaUrl = loadSinaNewsList()
         sohuUrl = loadSohuNewsList()
         wangyiUrl = loadWangyiNewsList()
-        #腾讯新闻去重
-        for url in updatedurls:
-            if url in totalurls:
-                updatedurls.remove(url)
-            else:
-                totalurls.append(url)
-
-        #新浪新闻去重
-        for url in sinaUrl:
-            if url in totalurls:
-                sinaUrl.remove(url)
-            else:
-                totalurls.append(url)
-        #搜狐新闻去重
-        for url in sohuUrl:
-            if url in totalurls:
-                sohuUrl.remove(url)
-            else:
-                totalurls.append(url)
-        #网易新闻去重
-        for url in wangyiUrl:
-            if url in totalurls:
-                wangyiUrl.remove(url)
-            else:
-                totalurls.append(url)
-
         updatedNews = []
         if len(updatedurls)!=0:
             updatedNews.extend(handleNewslist(0,updatedurls))
@@ -187,12 +179,17 @@ if __name__ == "__main__":
             updatedNews.extend(handleNewslist(2,sohuUrl))
         if len(wangyiUrl)!=0:
             updatedNews.extend(handleNewslist(3,wangyiUrl))
-        print(updatedNews)
-        #if len(updatedNews)!=0:
-            #y = Staticsave.insert_many(newsSet.find())
-            #newsSet.delete_many({})
-            #x = newsSet.insert_many(updatedNews)
-            #print(len(updatedNews))
+        count = 0
+        print("total:"+str(len(updatedNews)))
+        for news in updatedNews:
+            if (Staticsave.find({"title":news["title"]}).count())==0:
+                y = Staticsave.insert_one(news)
+                if news['category'] in type_map.keys():
+                    mycol = Staticdb[type_map[news['category']]]
+                    mycol.insert_one(news)
+                #x = newsSet.insert_one(news)
+                count = count+1
+        print("not same:"+str(count))
         print("epoch end")
         time.sleep(60)
 
