@@ -182,16 +182,14 @@ if __name__ == "__main__":
         count = 0
         print("total:"+str(len(updatedNews)))
         for news in updatedNews:
-            if (Staticsave.find({"title":news["title"]}).count())==0:
+            if (Staticsave.count_documents({"title":news["title"]}))==0:
                 y = Staticsave.insert_one(news)
                 if news['category'] in type_map.keys():
                     mycol = Staticdb[type_map[news['category']]]
                     mycol.insert_one(news)
-                #x = newsSet.insert_one(news)
                 count = count+1
         print("not same:"+str(count))
         print("epoch end")
         time.sleep(60)
-
 
 
