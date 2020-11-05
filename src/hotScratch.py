@@ -3,6 +3,7 @@ import pymongo
 import requests
 import json
 import datetime
+import time
 
 def getHotDetail(hot_top):
     hot_news = []
@@ -39,13 +40,23 @@ def getHotComment(todayDate):
     return hot_comment
 
 if __name__ == "__main__":
-    nowDate= str(datetime.datetime.now())
-    nowDate = nowDate.replace('-','')[:8]
-    hot_click = getHotClick(nowDate)
-    hot_comment = getHotComment(nowDate)
-    hot_click_news = getHotDetail(hot_click)[0:10]
-    hot_comment_news = getHotDetail(hot_comment)[0:10]
-    print(hot_click_news)
-    print(len(hot_click_news))
-    print(hot_comment_news)
-    print(len(hot_comment_news))
+    myclient = pymongo.MongoClient("mongodb://localhost/")
+    Staticdb = myclient["NewsCopy"]
+    hot_click_save = Staticdb["hot_click"]
+    hot_comment_save = Staticdb["hot_comment"]
+    while True:
+        nowDate= str(datetime.datetime.now())
+        nowDate = nowDate.replace('-','')[:8]
+        hot_click = getHotClick(nowDate)
+        hot_comment = getHotComment(nowDate)
+        hot_click_news = getHotDetail(hot_click)[0:10]
+        hot_comment_news = getHotDetail(hot_comment)[0:10]
+        delete_x = hot_click_save.delete_many({})
+        delete_y = hot_comment_save.delete_many({})
+        save_x = hot_click_save.insert_many(hot_click_news)
+        save_y = hot_comment_save.insert_many(hot_comment_news)
+        print(hot_click_news)
+        print(len(hot_click_news))
+        print(hot_comment_news)
+        print(len(hot_comment_news))
+        time.sleep(3600)
