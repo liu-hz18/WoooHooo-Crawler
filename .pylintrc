@@ -159,7 +159,9 @@ disable=print-statement,
         wrong-import-order,
         wildcard-import,
         redefined-builtin,
-        eval-used
+        eval-used,
+        too-many-nested-blocks,
+        consider-using-enumerate
         
 
 # Enable the message, report, category or checker with the given id(s). You can
