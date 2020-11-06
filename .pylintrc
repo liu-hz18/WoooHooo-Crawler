@@ -151,6 +151,9 @@ disable=print-statement,
         no-else-return,
         too-many-return-statements,
         too-many-boolean-expressions,
+        too-many-locals,
+        bare-except,
+        unused-wildcard-import.
         unused-variable,
         broad-except
         

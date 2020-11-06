@@ -1,5 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
+import time
+import pymongo
 
 def getHotSearch():
     base_url = "http://top.baidu.com/buzz?b=2"
@@ -22,7 +24,16 @@ def getHotSearch():
         hot_dict['title'] = title_list[i]
         hot_dict['value'] = hot_value_list[i]
         hot_search_list.append(hot_dict)
-    print(hot_search_list)
-    print(len(hot_search_list))
+    return hot_search_list
 
-getHotSearch()
+if __name__ == "__main__":
+    myclient = pymongo.MongoClient("mongodb://localhost:30001/")
+    Staticdb = myclient["NewsCopy"]
+    hot_search_save = Staticdb["hot_search"]
+    while True:
+        hot_search = getHotSearch()
+        delete_x = hot_search_save.delete_many({})
+        save_x = hot_search_save.insert_many(hot_search)
+        print(hot_search)
+        print(len(hot_search))
+        time.sleep(900)
