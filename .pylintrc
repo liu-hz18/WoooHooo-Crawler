@@ -153,9 +153,10 @@ disable=print-statement,
         too-many-boolean-expressions,
         too-many-locals,
         bare-except,
-        unused-wildcard-import.
+        unused-wildcard-import,
         unused-variable,
-        broad-except
+        broad-except,
+        wrong-import-order
         
 
 # Enable the message, report, category or checker with the given id(s). You can
