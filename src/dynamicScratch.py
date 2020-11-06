@@ -141,7 +141,7 @@ def loadWangyiNewsList():
 
 
 if __name__ == "__main__":
-    myclient = pymongo.MongoClient("mongodb://localhost/")
+    myclient = pymongo.MongoClient("mongodb://localhost:30001/")
     #mydb = myclient["DynamicNews"]
     #newsSet = mydb["news"]
     Staticdb = myclient["NewsCopy"]

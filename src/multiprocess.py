@@ -16,13 +16,16 @@ def loadDateNews(date,newsSet):
                     temp = i + j + k + l
                     url=baseUrl+temp+tailUrl
                     try:
-                        dateNews.append(loadWithTime(url))
+                        news = loadWithTime(url)
+                        try:
+                            x = newsSet.insert_one(news)
+                        except:
+                            pass
                         #print(dateNews[-1])
                         count=count+1
                     except:
                         continue
             print(date+":"+str(count))
-            x = newsSet.insert_many(dateNews)
 
 class myThread(threading.Thread):  # 继承父类threading.Thread
     def __init__(self, threadID, date,newsSet):
@@ -36,7 +39,7 @@ class myThread(threading.Thread):  # 继承父类threading.Thread
 
 
 if __name__ == "__main__":
-    myclient = pymongo.MongoClient("mongodb://localhost/")
+    myclient = pymongo.MongoClient("mongodb://localhost:30001/")
     mydb = myclient["StaticNews"]
     newsSet=mydb["news"]
 

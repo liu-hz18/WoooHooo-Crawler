@@ -9,7 +9,7 @@ def createIndex(mydb):
         myCol.create_index([('publish_time', pymongo.DESCENDING)])
 
 if __name__ == "__main__":
-    myclient = pymongo.MongoClient("mongodb://localhost/")
+    myclient = pymongo.MongoClient("mongodb://localhost:30001/")
     mydb = myclient["NewsCopy"]
     newsSet = mydb["news"]
     type_map={

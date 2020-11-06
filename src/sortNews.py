@@ -1,6 +1,6 @@
 import pymongo
 if __name__ == "__main__":
-    myclient = pymongo.MongoClient("mongodb://localhost/")
+    myclient = pymongo.MongoClient("mongodb://localhost:30001/")
     mydb = myclient["StaticNews"]
     newsSet = mydb["news"]
     mydata = newsSet.find().sort([("publish_time", pymongo.DESCENDING)])

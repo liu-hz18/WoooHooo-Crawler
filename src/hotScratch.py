@@ -40,7 +40,7 @@ def getHotComment(todayDate):
     return hot_comment
 
 if __name__ == "__main__":
-    myclient = pymongo.MongoClient("mongodb://localhost/")
+    myclient = pymongo.MongoClient("mongodb://localhost:30001/")
     Staticdb = myclient["NewsCopy"]
     hot_click_save = Staticdb["hot_click"]
     hot_comment_save = Staticdb["hot_comment"]
