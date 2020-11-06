@@ -156,7 +156,10 @@ disable=print-statement,
         unused-wildcard-import,
         unused-variable,
         broad-except,
-        wrong-import-order
+        wrong-import-order,
+        wildcard-import,
+        redefined-builtin,
+        eval-used
         
 
 # Enable the message, report, category or checker with the given id(s). You can
