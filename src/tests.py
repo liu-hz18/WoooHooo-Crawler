@@ -1,4 +1,5 @@
 from .Scratchtest import getHTMLText,getstandardHTMLText,loadWithTime,analyzeSinaUrl,analyzeSohuUrl,analyzeWangyiUrl,getRandomUrl
+from .HotFunction import getHotSearch,getHotDetail,getHotClick,getHotComment,getNowDate
 import pytest
 import requests
 
@@ -67,5 +68,26 @@ class TestScratch:
     def test_getRandomUrl(self):
         num = len(getRandomUrl())
         assert  num == 36**4
+
+    def test_getHotSearch(self):
+        hot_search_list = getHotSearch()
+        for news in hot_search_list:
+            assert 'title' in news.keys()
+            assert 'value' in news.keys()
+
+    def test_getHotClick(self):
+        nowDate = getNowDate()
+        hot_click = getHotClick(nowDate)
+        assert len(hot_click) > 0
+
+    def test_getHotDetail(self):
+        nowDate = getNowDate()
+        hot_comment = getHotComment(nowDate)
+        hot_comment_news = getHotDetail(hot_comment)[0:10]
+        for index in hot_comment_news:
+            assert 'rank' in index.keys()
+            assert 'title' in index.keys()
+            assert 'publish_time' in index.keys()
+            assert 'url' in index.keys()
 
 

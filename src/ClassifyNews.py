@@ -8,11 +8,8 @@ def createIndex(mydb):
         myCol.create_index([('title', 1)], unique=True)
         myCol.create_index([('publish_time', pymongo.DESCENDING)])
 
-if __name__ == "__main__":
-    myclient = pymongo.MongoClient("mongodb://localhost:30001/")
-    mydb = myclient["NewsCopy"]
-    newsSet = mydb["news"]
-    type_map={
+def getClassifyMap():
+    return {
         "politics":"politics",#国内
         "history":"history",#文化
         "social":"social",#社会
@@ -31,6 +28,12 @@ if __name__ == "__main__":
         "tech":"science",
         "game":"game",#游戏
     }
+
+if __name__ == "__main__":
+    myclient = pymongo.MongoClient("mongodb://localhost:30001/")
+    mydb = myclient["NewsCopy"]
+    newsSet = mydb["news"]
+    type_map = getClassifyMap()
     createIndex(mydb)
     for news in newsSet.find():
         category=news['category']

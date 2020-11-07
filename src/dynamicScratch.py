@@ -139,12 +139,8 @@ def loadWangyiNewsList():
             url_list.append(news["docurl"])
     return url_list
 
-
-if __name__ == "__main__":
-    myclient = pymongo.MongoClient("mongodb://localhost:30001/")
-    Staticdb = myclient["NewsCopy"]
-    Staticsave = Staticdb["news"]
-    type_map = {
+def getTypeMap():
+    return {
         "politics": "politics",  # 国内
         "history": "history",  # 文化
         "social": "social",  # 社会
@@ -163,22 +159,28 @@ if __name__ == "__main__":
         "tech": "science",
         "game": "game",  # 游戏
     }
+
+def getUpdatedNews(updatedurls,sinaUrl,sohuUrl,wangyiUrl):
+    updatedNews = []
+    if len(updatedurls) != 0:
+        updatedNews.extend(handleNewslist(0, updatedurls))
+    if len(sinaUrl) != 0:
+        updatedNews.extend(handleNewslist(1, sinaUrl))
+    if len(sohuUrl) != 0:
+        updatedNews.extend(handleNewslist(2, sohuUrl))
+    if len(wangyiUrl) != 0:
+        updatedNews.extend(handleNewslist(3, wangyiUrl))
+    print("total:" + str(len(updatedNews)))
+    return updatedNews
+
+if __name__ == "__main__":
+    myclient = pymongo.MongoClient("mongodb://localhost:30001/")
+    Staticdb = myclient["NewsCopy"]
+    Staticsave = Staticdb["news"]
+    type_map = getTypeMap()
     while True:
-        updatedurls = loadTencentNews()
-        sinaUrl = loadSinaNewsList()
-        sohuUrl = loadSohuNewsList()
-        wangyiUrl = loadWangyiNewsList()
-        updatedNews = []
-        if len(updatedurls)!=0:
-            updatedNews.extend(handleNewslist(0,updatedurls))
-        if len(sinaUrl)!=0:
-            updatedNews.extend(handleNewslist(1,sinaUrl))
-        if len(sohuUrl)!=0:
-            updatedNews.extend(handleNewslist(2,sohuUrl))
-        if len(wangyiUrl)!=0:
-            updatedNews.extend(handleNewslist(3,wangyiUrl))
+        updatedNews = getUpdatedNews(loadTencentNews(),loadSinaNewsList(),loadSohuNewsList(),loadWangyiNewsList())
         count = 0
-        print("total:"+str(len(updatedNews)))
         for news in updatedNews:
             if (Staticsave.count_documents({"title":news["title"]}))==0:
                 y = Staticsave.insert_one(news)
