@@ -1,5 +1,6 @@
 from .Scratchtest import getHTMLText,getstandardHTMLText,loadWithTime,analyzeSinaUrl,analyzeSohuUrl,analyzeWangyiUrl,getRandomUrl
 from .HotFunction import getHotSearch,getHotDetail,getHotClick,getHotComment,getNowDate
+from .DynamicFunction import getTypeMap,getUpdatedNews,loadTencentNews,loadSinaNewsList,loadSohuNewsList,loadWangyiNewsList
 import pytest
 import requests
 

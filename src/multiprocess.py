@@ -1,5 +1,5 @@
 import threading
-from Scratchtest import *
+from .Scratchtest import *
 import pymongo
 #url 形似https://new.qq.com/omn/date/dateA0+四位随机大写字母与数字序列+00.html
 def loadDateNews(date,newsSet):
