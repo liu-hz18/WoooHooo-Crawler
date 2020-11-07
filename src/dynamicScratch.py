@@ -1,7 +1,3 @@
-import requests
-import demjson
-import json
-from bs4 import BeautifulSoup
 import pymongo
 import time
 from .DynamicFunction import getTypeMap,getUpdatedNews,loadTencentNews,loadSinaNewsList,loadSohuNewsList,loadWangyiNewsList

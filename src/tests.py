@@ -1,8 +1,8 @@
-from .Scratchtest import getHTMLText,getstandardHTMLText,loadWithTime,analyzeSinaUrl,analyzeSohuUrl,analyzeWangyiUrl,getRandomUrl
-from .HotFunction import getHotSearch,getHotDetail,getHotClick,getHotComment,getNowDate
-from .DynamicFunction import getTypeMap,getUpdatedNews,loadTencentNews,loadSinaNewsList,loadSohuNewsList,loadWangyiNewsList
 import pytest
 import requests
+from .Scratchtest import getHTMLText,getstandardHTMLText,loadWithTime,analyzeSinaUrl,analyzeSohuUrl,analyzeWangyiUrl,getRandomUrl
+from .HotFunction import getHotSearch,getHotDetail,getHotClick,getHotComment,getNowDate
+from .DynamicFunction import getTypeMap,getUpdatedNews,loadTencentNews,loadSinaNewsList,loadSohuNewsList,loadWangyiNewsList,getClassifyMap,createIndex
 
 class TestScratch:
     def test_getHTMLText(self):
@@ -91,4 +91,26 @@ class TestScratch:
             assert 'publish_time' in index.keys()
             assert 'url' in index.keys()
 
+    def test_getTypeMap(self):
+        type_map = getTypeMap()
+        assert isinstance(type_map,dict)
 
+    def test_getUpdatedNews(self):
+        tencent_url = loadTencentNews()
+        sina_url = loadSinaNewsList()
+        sohu_url = loadSohuNewsList()
+        wangyi_url = loadWangyiNewsList()
+        updated_news = getUpdatedNews(tencent_url,sina_url,sohu_url,wangyi_url)
+        for single_news in updated_news:
+            assert 'url' in single_news.keys()
+            assert 'title' in single_news.keys()
+            assert 'publish_time' in single_news.keys()
+            assert 'content' in single_news.keys()
+            assert 'category' in single_news.keys()
+            assert 'source' in single_news.keys()
+            assert 'imageurl' in single_news.keys()
+            assert 'top_img' in single_news.keys()
+
+    def test_getClassifyMap(self):
+        classify_map = getClassifyMap()
+        assert isinstance(classify_map,dict)

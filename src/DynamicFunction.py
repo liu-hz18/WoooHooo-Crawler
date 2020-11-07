@@ -1,10 +1,10 @@
 import random
 import requests
-import demjson
 import json
 import time
 from bs4 import BeautifulSoup
 from .Scratchtest import loadWithTime,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText
+import pymongo
 
 #模拟访问腾讯新闻各个首页
 def loadTencentNews():
