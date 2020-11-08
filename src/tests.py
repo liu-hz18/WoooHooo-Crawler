@@ -1,8 +1,9 @@
 import pytest
 import requests
+#import demjson
 from .Scratchtest import getHTMLText,getstandardHTMLText,loadWithTime,analyzeSinaUrl,analyzeSohuUrl,analyzeWangyiUrl,getRandomUrl
 from .HotFunction import getHotSearch,getHotDetail,getHotClick,getHotComment,getNowDate
-from .DynamicFunction import getTypeMap,getUpdatedNews,loadTencentNews,loadSinaNewsList,loadSohuNewsList,loadWangyiNewsList,getClassifyMap,createIndex
+from .DynamicFunction import getTypeMap,getUpdatedNews,loadTencentNews,loadSinaNewsList,loadSohuNewsList,loadWangyiNewsList,getClassifyMap
 
 class TestScratch:
     def test_getHTMLText(self):

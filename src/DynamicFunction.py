@@ -4,7 +4,7 @@ import json
 import time
 from bs4 import BeautifulSoup
 from .Scratchtest import loadWithTime,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText
-import pymongo
+#import demjson
 
 #模拟访问腾讯新闻各个首页
 def loadTencentNews():
@@ -193,9 +193,3 @@ def getClassifyMap():
         "game":"game",#游戏
     }
 
-def createIndex(mydb):
-    kind_list = ["politics","history","social","chuguo","mil","finance","ent","sports","science","game"]
-    for kind in kind_list:
-        myCol=mydb[kind]
-        myCol.create_index([('title', 1)], unique=True)
-        myCol.create_index([('publish_time', pymongo.DESCENDING)])
