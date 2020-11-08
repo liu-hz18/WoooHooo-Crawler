@@ -60,11 +60,11 @@ def loadWithTime(url):
 def analyzeSinaUrl(url):
     html = getstandardHTMLText(url)
     soup = BeautifulSoup(html, "html.parser")
-    title = soup.select('.main-title')[0].text
-    publish_time = soup.select('.date-source span')[0].text
+    title = soup.select('h1.main-title')[0].text
+    publish_time = soup.select('div.date-source span')[0].text
     publish_time = datetime.strptime(publish_time, '%Y年%m月%d日 %H:%M')
     publish_time.strftime('%Y-%m-%d')
-    source =soup.select('.date-source span')[1].text  # 获取新闻来源
+    source =soup.select('div.date-source >a')[0].text  # 获取新闻来源
     images=soup.select("div.img_wrapper >img")
     imagesurl = []
     for image in images:
@@ -174,5 +174,6 @@ def getRandomUrl():
                     temp=i+j+k+l
                     randomList.append(temp)
     return randomList
+
 
 

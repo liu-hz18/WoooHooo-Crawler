@@ -1,0 +1,117 @@
+import pytest
+import requests
+#import demjson
+from .Scratchtest import getHTMLText,getstandardHTMLText,loadWithTime,analyzeSinaUrl,analyzeSohuUrl,analyzeWangyiUrl,getRandomUrl
+from .HotFunction import getHotSearch,getHotDetail,getHotClick,getHotComment,getNowDate
+from .DynamicFunction import getTypeMap,getUpdatedNews,loadTencentNews,loadSinaNewsList,loadSohuNewsList,loadWangyiNewsList,getClassifyMap
+
+class TestScratch:
+    def test_getHTMLText(self):
+        url_base = "https://new.qq.com/rain/a/20201107A037ZB00"
+        result = getHTMLText(url_base)
+        r = requests.get(url_base, allow_redirects=False)
+        assert result == r.text
+
+    def test_getsatandardHTMLText(self):
+        url_base = "https://new.qq.com/rain/a/20201107A037ZB00"
+        result = getstandardHTMLText(url_base)
+        r = requests.get(url_base, allow_redirects=False)
+        r.encoding = 'utf-8'
+        assert result == r.text
+
+    def test_loadWithTime(self):
+        url_base = "https://new.qq.com/omn/20201107/20201107A008E800.html"
+        news = loadWithTime(url_base)
+        assert 'url' in news.keys()
+        assert 'title' in news.keys()
+        assert 'publish_time' in news.keys()
+        assert 'content' in news.keys()
+        assert 'category' in news.keys()
+        assert 'source' in news.keys()
+        assert 'imageurl' in news.keys()
+        assert 'top_img' in news.keys()
+
+    def test_analyzeSinaUrl(self):
+        url_base = "https://finance.sina.com.cn/china/gncj/2020-11-07/doc-iiznezxs0513551.shtml"
+        news = analyzeSinaUrl(url_base)
+        assert 'url' in news.keys()
+        assert 'title' in news.keys()
+        assert 'publish_time' in news.keys()
+        assert 'content' in news.keys()
+        assert 'category' in news.keys()
+        assert 'source' in news.keys()
+        assert 'imageurl' in news.keys()
+        assert 'top_img' in news.keys()
+
+    def test_analyzeSohuUrl(self):
+        url_base = "https://www.sohu.com/a/430176139_260616?spm=smpc.news-home.top-news3.2.1604735248153x1lIxBL&_f=index_chan08news_6"
+        news = analyzeSohuUrl(url_base)
+        assert 'url' in news.keys()
+        assert 'title' in news.keys()
+        assert 'publish_time' in news.keys()
+        assert 'content' in news.keys()
+        assert 'category' in news.keys()
+        assert 'source' in news.keys()
+        assert 'imageurl' in news.keys()
+        assert 'top_img' in news.keys()
+
+    def test_analyzeWangyiUrl(self):
+        url_base = "https://dy.163.com/article/FQQQSHBC051481US.html?clickfrom=w_yw"
+        news = analyzeWangyiUrl(url_base)
+        assert 'url' in news.keys()
+        assert 'title' in news.keys()
+        assert 'publish_time' in news.keys()
+        assert 'content' in news.keys()
+        assert 'category' in news.keys()
+        assert 'source' in news.keys()
+        assert 'imageurl' in news.keys()
+        assert 'top_img' in news.keys()
+
+    def test_getRandomUrl(self):
+        num = len(getRandomUrl())
+        assert  num == 36**4
+
+    def test_getHotSearch(self):
+        hot_search_list = getHotSearch()
+        for news in hot_search_list:
+            assert 'title' in news.keys()
+            assert 'value' in news.keys()
+
+    def test_getHotClick(self):
+        nowDate = getNowDate()
+        hot_click = getHotClick(nowDate)
+        assert len(hot_click) > 0
+
+    def test_getHotDetail(self):
+        nowDate = getNowDate()
+        hot_comment = getHotComment(nowDate)
+        hot_comment_news = getHotDetail(hot_comment)[0:10]
+        for index in hot_comment_news:
+            assert 'rank' in index.keys()
+            assert 'title' in index.keys()
+            assert 'publish_time' in index.keys()
+            assert 'url' in index.keys()
+
+    def test_getTypeMap(self):
+        type_map = getTypeMap()
+        assert isinstance(type_map,dict)
+
+    def test_getUpdatedNews(self):
+        tencent_url = loadTencentNews()
+        sina_url = loadSinaNewsList()
+        sohu_url = loadSohuNewsList()
+        wangyi_url = loadWangyiNewsList()
+        updated_news = getUpdatedNews(tencent_url,sina_url,sohu_url,wangyi_url)
+        for single_news in updated_news:
+            assert 'url' in single_news.keys()
+            assert 'title' in single_news.keys()
+            assert 'publish_time' in single_news.keys()
+            assert 'content' in single_news.keys()
+            assert 'category' in single_news.keys()
+            assert 'source' in single_news.keys()
+            assert 'imageurl' in single_news.keys()
+            assert 'top_img' in single_news.keys()
+
+    def test_getClassifyMap(self):
+        classify_map = getClassifyMap()
+        assert isinstance(classify_map,dict)

@@ -151,8 +151,20 @@ disable=print-statement,
         no-else-return,
         too-many-return-statements,
         too-many-boolean-expressions,
+        too-many-locals,
+        bare-except,
+        unused-wildcard-import,
         unused-variable,
-        broad-except
+        broad-except,
+        wrong-import-order,
+        wildcard-import,
+        redefined-builtin,
+        eval-used,
+        too-many-nested-blocks,
+        consider-using-enumerate,
+        undefined-variable,
+        no-self-use,
+        import-error
         
 
 # Enable the message, report, category or checker with the given id(s). You can
