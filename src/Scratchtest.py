@@ -6,7 +6,8 @@ from datetime import datetime
 #得到html文本
 def getHTMLText(url):
     try:
-        r = requests.get(url, timeout = 30,allow_redirects=False)
+        #r = requests.get(url, timeout = 30,allow_redirects=False)
+        r = requests.get(url, timeout=30)
         r.raise_for_status()
         return r.text
     except:
@@ -54,6 +55,40 @@ def loadWithTime(url):
         'imageurl':imagesurl,
         'top_img':top_image
     }
+    return article
+
+#解析rain/a形式的腾讯新闻
+def load_tencent_with_a(url):
+    html = getHTMLText(url)
+    soup = BeautifulSoup(html, "html.parser")
+    title = soup.select("div.LEFT > h1")[0].text
+    temp = json.loads(soup.findAll('script')[5].contents[0].split("=")[-1])
+    publish_time = temp['pubtime']
+    source = temp['media']
+    category = temp['catalog1']
+    paragragh = soup.select("div.content-article > p.one-p")
+    textcontent = ""
+    for p in paragragh:
+        if len(p) > 0:
+            textcontent += p.get_text().replace('\n', " ")
+    images = soup.select("div.content-article >p.one-p> img.content-picture")
+    images_url = []
+    for index in images:
+        images_url.append(index.get('src'))
+    top_image = ""
+    if len(images) != 0:
+        top_image = images[0].get('src')
+    article = {
+        'url': url,
+        'title': title,
+        'publish_time': publish_time,
+        'content': textcontent,
+        'category': category,
+        'source': "腾讯：" + source,
+        'imageurl': images_url,
+        'top_img': top_image
+    }
+    print(article)
     return article
 
 #解析新浪新闻
@@ -175,5 +210,5 @@ def getRandomUrl():
                     randomList.append(temp)
     return randomList
 
-
+load_tencent_with_a("https://new.qq.com/rain/a/20201108A056SO00")
 

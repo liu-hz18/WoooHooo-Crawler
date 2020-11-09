@@ -2,13 +2,6 @@ import pymongo
 import time
 from .DynamicFunction import getTypeMap,getUpdatedNews,loadTencentNews,loadSinaNewsList,loadSohuNewsList,loadWangyiNewsList
 
-def createIndex(mydb):
-    kind_list = ["politics","history","social","chuguo","mil","finance","ent","sports","science","game"]
-    for kind in kind_list:
-        myCol=mydb[kind]
-        myCol.create_index([('title', 1)], unique=True)
-        myCol.create_index([('publish_time', pymongo.DESCENDING)])
-
 if __name__ == "__main__":
     myclient = pymongo.MongoClient("mongodb://localhost:30001/")
     Staticdb = myclient["NewsCopy"]

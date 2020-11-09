@@ -3,8 +3,8 @@ import requests
 import json
 import time
 from bs4 import BeautifulSoup
-from .Scratchtest import loadWithTime,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText
-#import demjson
+from .Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText
+import demjson
 
 #模拟访问腾讯新闻各个首页
 def loadTencentNews():
@@ -50,7 +50,10 @@ def handleNewslist(type,urls):
     for url in urls:
         if type == 0:
             try:
-                news = loadWithTime(url)
+                try:
+                    news = loadWithTime(url)
+                except:
+                    news = load_tencent_with_a(url)
                 updatedNews.append(news)
             except:
                 continue
