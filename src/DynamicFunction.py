@@ -24,15 +24,22 @@ def loadTencentNews():
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36',
     }
     params = {
-        'sub_srv_id': 'video',
+        'sub_srv_id': '24hours',
         'srv_id': 'pc',
         'offset': 0,
-        'limit': 10,
+        'limit': 199,
         'strategy': 1,
         'ext': "{\"pool\":[\"top\"], \"is_filter\":10, \"check_type\":true}",
     }
+    hot_url_list = []
+    response = requests.get(baseurls, params=params, headers=headers)
+    news_list = demjson.decode(response.content)["data"]["list"]
+    for news in news_list:
+        hot_url_list.append(news['url'])
+
+    params['limit'] = 10
     urls=[]
-    for index in channels:
+    for index in channels[1:]:
         try:
             params['sub_srv_id']=index
             response = requests.get(baseurls, params=params, headers=headers)
@@ -41,7 +48,7 @@ def loadTencentNews():
                 urls.append(news['url'])
         except:
             continue
-    return list(set(urls))
+    return list(set(urls)),hot_url_list
 
 #处理热点新闻列表
 def handleNewslist(type,urls):
@@ -113,6 +120,19 @@ def loadSinaNewsList():
         "2515": "science",  # 科技
     }
     base_url = 'https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid={}&k=&num=50&page={}&r={}'
+    hot_url_list = []
+
+    r = random.random()
+    hot_request = base_url.format("2509", 1, r)
+    hot_response = requests.get(hot_request)
+    hot_result = json.loads(hot_response.text)
+    hot_data_list = hot_result.get('result').get('data')
+    for news in hot_data_list:
+        url_dict = {}
+        url_dict['url'] = news['url']
+        url_dict['type'] = ''
+        hot_url_list.append(url_dict)
+
     url_list = []
     for lid in classify_map.keys():
         for page in range(1, page_total+1):
@@ -126,8 +146,7 @@ def loadSinaNewsList():
                 url_dict['url'] = news['url']
                 url_dict['type'] = classify_map[lid]
                 url_list.append(url_dict)
-    #print(url_list)
-    return url_list
+    return url_list,hot_url_list
 
 #analyzeSohuUrl("https://www.sohu.com")
 def loadSohuNewsList():
@@ -222,5 +241,10 @@ def getClassifyMap():
         "game":"game",#游戏
     }
 
+def get_hot_news(tencent_news,sina_news):
+    hot_news = []
+    hot_news.extend(handleNewslist(0, tencent_news))
+    hot_news.extend(handleNewslist(1, sina_news))
+    return hot_news
 
 
