@@ -92,7 +92,8 @@ def load_tencent_with_a(url):
     return article
 
 #解析新浪新闻
-def analyzeSinaUrl(url):
+def analyzeSinaUrl(url_dict):
+    url = url_dict['url']
     html = getstandardHTMLText(url)
     soup = BeautifulSoup(html, "html.parser")
     title = soup.select('h1.main-title')[0].text
@@ -116,7 +117,7 @@ def analyzeSinaUrl(url):
         'title': title,
         'publish_time': publish_time.__format__('%Y-%m-%d %H:%M:%S'),
         'content': articleall,
-        'category': "",
+        'category': url_dict['type'],
         'source': "新浪："+source,
         'imageurl': imagesurl,
         'top_img': top_imageurl

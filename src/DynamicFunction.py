@@ -65,6 +65,7 @@ def handleNewslist(type,urls):
             try:
                 news = analyzeSinaUrl(url)
                 updatedNews.append(news)
+                print(news)
                 time.sleep(0.1)
             except:
                 continue
@@ -103,18 +104,33 @@ def loadSinaNewsList():
     #     "2974": "国内国际社会"
     #  可修改  这里设置爬取100页
     page_total = 1
+    classify_map = {
+        "2510": "politics",  # 时政
+        "2669": "social",  # 社会
+        "2511": "chuguo",  # 国际
+        "2514": "mil",  # 军事
+        "2516": "finance",  # 财经
+        "2518": "finance",
+        "2517": "finance",
+        "2513": "ent",  # 娱乐
+        "2512": "sports",  # 体育
+        "2515": "science",  # 科技
+    }
     base_url = 'https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid={}&k=&num=50&page={}&r={}'
     url_list = []
-    for page in range(1, page_total+1):
-        #  按上面注释  可修改 这里"2509"代表"全部"类别的新闻
-        lid = "2509"
-        r = random.random()
-        Request=base_url.format(lid, page, r)
-        response = requests.get(Request)
-        result = json.loads(response.text)
-        data_list = result.get('result').get('data')
-        for news in data_list:
-            url_list.append(news['url'])
+    for lid in classify_map.keys():
+        for page in range(1, page_total+1):
+            r = random.random()
+            Request=base_url.format(lid, page, r)
+            response = requests.get(Request)
+            result = json.loads(response.text)
+            data_list = result.get('result').get('data')
+            for news in data_list:
+                url_dict = {}
+                url_dict['url'] = news['url']
+                url_dict['type'] = classify_map[lid]
+                url_list.append(url_dict)
+    print(url_list)
     return url_list
 
 #analyzeSohuUrl("https://www.sohu.com")
@@ -147,7 +163,7 @@ def loadWangyiNewsList():
 
 def getTypeMap():
     return {
-        "politics": "politics",  # 国内
+        "politics": "politics",  # 时政
         "history": "history",  # 文化
         "social": "social",  # 社会
         "cul": "social",
@@ -200,4 +216,5 @@ def getClassifyMap():
         "game":"game",#游戏
     }
 
+handleNewslist(1,loadSinaNewsList())
 
