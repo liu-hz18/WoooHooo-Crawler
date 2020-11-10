@@ -29,7 +29,7 @@ def loadTencentNews():
         'offset': 0,
         'limit': 199,
         'strategy': 1,
-        'ext': "{\"pool\":[\"top\"], \"is_filter\":10, \"check_type\":true}",
+        'ext': "{\"pool\":[\"top\"], \"is_filter\":7, \"check_type\":true}",
     }
     hot_url_list = []
     response = requests.get(baseurls, params=params, headers=headers)
@@ -38,6 +38,7 @@ def loadTencentNews():
         hot_url_list.append(news['url'])
 
     params['limit'] = 10
+    params['ext'] = "{\"pool\":[\"top\"], \"is_filter\":10, \"check_type\":true}"
     urls=[]
     for index in channels[1:]:
         try:
