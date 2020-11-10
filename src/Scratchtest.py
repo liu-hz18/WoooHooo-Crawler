@@ -34,7 +34,7 @@ def loadWithTime(url):
         if len(para) > 0:
             textcontent += para.get_text().replace('\n'," ")
     # 将爬取到的文章用字典格式来存
-    temp = json.loads((soup.findAll('script')[5]).contents[0].split("=")[-1])
+    temp = json.loads((soup.select('script')[5]).contents[0].split("=")[-1])
     time=temp["pubtime"]
     catalog=temp["catalog1"]
     source=temp['media']
@@ -88,7 +88,7 @@ def load_tencent_with_a(url):
         'imageurl': images_url,
         'top_img': top_image
     }
-    print(article)
+    #print(article)
     return article
 
 #解析新浪新闻
@@ -209,6 +209,4 @@ def getRandomUrl():
                     temp=i+j+k+l
                     randomList.append(temp)
     return randomList
-
-load_tencent_with_a("https://new.qq.com/rain/a/20201108A056SO00")
 

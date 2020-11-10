@@ -3,7 +3,7 @@ import requests
 import json
 import time
 from bs4 import BeautifulSoup
-from .Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText
+from Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText
 import demjson
 
 #模拟访问腾讯新闻各个首页
@@ -47,14 +47,18 @@ def loadTencentNews():
 #处理热点新闻列表
 def handleNewslist(type,urls):
     updatedNews=[]
+    #print(len(urls))
     for url in urls:
+        #print(url)
         if type == 0:
             try:
                 try:
                     news = loadWithTime(url)
                 except:
-                    news = load_tencent_with_a(url)
+                    format_url = "https://new.qq.com/rain/a/"+url[32:-5]
+                    news = load_tencent_with_a(format_url)
                 updatedNews.append(news)
+                #print(news)
             except:
                 continue
         elif type == 1:
@@ -195,4 +199,5 @@ def getClassifyMap():
         "tech":"science",
         "game":"game",#游戏
     }
+
 
