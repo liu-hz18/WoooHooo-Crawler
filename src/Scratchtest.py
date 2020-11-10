@@ -162,7 +162,8 @@ def analyzeSohuUrl(url):
     return res_dict
 
 #解析网易新闻
-def analyzeWangyiUrl(url):
+def analyzeWangyiUrl(url_dict):
+    url = url_dict['url']
     html = getHTMLText(url)
     soup = BeautifulSoup(html, "html.parser")
     title = soup.select('div.post_main > h1')[0].text
@@ -191,7 +192,7 @@ def analyzeWangyiUrl(url):
         'title': title,
         'publish_time': publish_time,
         'content': articleall,
-        'category': "",
+        'category': url_dict['type'],
         'source': "网易："+source,
         'imageurl': imagesurl,
         'top_img': top_imageurl
