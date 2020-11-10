@@ -65,7 +65,7 @@ def handleNewslist(type,urls):
             try:
                 news = analyzeSinaUrl(url)
                 updatedNews.append(news)
-                print(news)
+                #print(news)
                 time.sleep(0.1)
             except:
                 continue
@@ -130,7 +130,7 @@ def loadSinaNewsList():
                 url_dict['url'] = news['url']
                 url_dict['type'] = classify_map[lid]
                 url_list.append(url_dict)
-    print(url_list)
+    #print(url_list)
     return url_list
 
 #analyzeSohuUrl("https://www.sohu.com")

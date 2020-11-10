@@ -14,7 +14,7 @@ if __name__ == "__main__":
         if dynamicNews.estimated_document_count() > 100:
             dynamicNews.drop()
         for news in updatedNews:
-            if (Staticsave.count_documents({"title":news["title"]}))==0:
+            if (Staticsave.count_documents({"title":news["title"]})==0 and Staticsave.count_documents({"url":news["url"]})==0 ):
                 x = dynamicNews.insert_one(news)
                 y = Staticsave.insert_one(news)
                 if news['category'] in type_map.keys():
