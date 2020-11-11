@@ -1,9 +1,9 @@
 import pytest
 import requests
-#import demjson
-from .Scratchtest import getHTMLText,getstandardHTMLText,loadWithTime,analyzeSinaUrl,analyzeSohuUrl,analyzeWangyiUrl,getRandomUrl
-from .HotFunction import getHotSearch,getHotDetail,getHotClick,getHotComment,getNowDate
-from .DynamicFunction import getTypeMap,getUpdatedNews,loadTencentNews,loadSinaNewsList,loadSohuNewsList,loadWangyiNewsList,getClassifyMap
+from .Scratchtest import getHTMLText,getstandardHTMLText,loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeSohuUrl,analyzeWangyiUrl,getRandomUrl,handleNewslist
+from .HotFunction import getHotSearch,getHotDetail,getHotClick,getHotComment,getNowDate,hot_news_scratch
+from .DynamicFunction import getTypeMap,getClassifyMap,get_tencent_channel,get_sina_channel,get_wangyi_channel,loadTencentNews,loadSinaNews,loadSohuNews,loadWangyiNews
+from .dynamicScratch import save_db,DynamicThread
 
 class TestScratch:
     def test_getHTMLText(self):
@@ -31,9 +31,23 @@ class TestScratch:
         assert 'imageurl' in news.keys()
         assert 'top_img' in news.keys()
 
+    def test_load_tencent_with_a(self):
+        url_base = "https://new.qq.com/rain/a/20201107A037ZB00"
+        news = load_tencent_with_a(url_base)
+        assert 'url' in news.keys()
+        assert 'title' in news.keys()
+        assert 'publish_time' in news.keys()
+        assert 'content' in news.keys()
+        assert 'category' in news.keys()
+        assert 'source' in news.keys()
+        assert 'imageurl' in news.keys()
+        assert 'top_img' in news.keys()
+
     def test_analyzeSinaUrl(self):
-        url_base = "https://finance.sina.com.cn/china/gncj/2020-11-07/doc-iiznezxs0513551.shtml"
-        news = analyzeSinaUrl(url_base)
+        url_dict = {}
+        url_dict['url'] =  "https://finance.sina.com.cn/china/gncj/2020-11-07/doc-iiznezxs0513551.shtml"
+        url_dict['type'] = 'politics'
+        news = analyzeSinaUrl(url_dict)
         assert 'url' in news.keys()
         assert 'title' in news.keys()
         assert 'publish_time' in news.keys()
@@ -56,8 +70,10 @@ class TestScratch:
         assert 'top_img' in news.keys()
 
     def test_analyzeWangyiUrl(self):
-        url_base = "https://dy.163.com/article/FQQQSHBC051481US.html?clickfrom=w_yw"
-        news = analyzeWangyiUrl(url_base)
+        url_dict = {}
+        url_dict['url'] = "https://dy.163.com/article/FQQQSHBC051481US.html?clickfrom=w_yw"
+        url_dict['type'] = 'politics'
+        news = analyzeWangyiUrl(url_dict)
         assert 'url' in news.keys()
         assert 'title' in news.keys()
         assert 'publish_time' in news.keys()
@@ -92,26 +108,42 @@ class TestScratch:
             assert 'publish_time' in index.keys()
             assert 'url' in index.keys()
 
+    def test_hot_news_scratch(self):
+        hot_news_list = hot_news_scratch()
+        assert len(hot_news_list)>0
+
     def test_getTypeMap(self):
         type_map = getTypeMap()
         assert isinstance(type_map,dict)
 
-    def test_getUpdatedNews(self):
-        tencent_url = loadTencentNews()
-        sina_url = loadSinaNewsList()
-        sohu_url = loadSohuNewsList()
-        wangyi_url = loadWangyiNewsList()
-        updated_news = getUpdatedNews(tencent_url,sina_url,sohu_url,wangyi_url)
-        for single_news in updated_news:
-            assert 'url' in single_news.keys()
-            assert 'title' in single_news.keys()
-            assert 'publish_time' in single_news.keys()
-            assert 'content' in single_news.keys()
-            assert 'category' in single_news.keys()
-            assert 'source' in single_news.keys()
-            assert 'imageurl' in single_news.keys()
-            assert 'top_img' in single_news.keys()
-
     def test_getClassifyMap(self):
         classify_map = getClassifyMap()
         assert isinstance(classify_map,dict)
+
+    def test_get_tencent_channel(self):
+        tencent_channel = get_tencent_channel()
+        assert len(tencent_channel) > 0
+
+    def test_get_sina_channel(self):
+        sina_channel = get_sina_channel()
+        assert len(sina_channel)>0
+
+    def test_get_wangyi_channel(self):
+        wangyi_channel = get_wangyi_channel()
+        assert len(wangyi_channel) > 0
+
+    def test_loadTencentNews(self):
+        tencent_news = loadTencentNews('24hours')
+        assert len(tencent_news) > 0
+
+    def test_loadSinaNews(self):
+        sina_news = loadSinaNews("2510")
+        assert len(sina_news) > 0
+
+    def test_loadSohuNews(self):
+        Sohu_news = loadSohuNews()
+        assert len(Sohu_news) > 0
+
+    def test_loadWangyiNews(self):
+        wangyi_news = loadWangyiNews("guonei")
+        assert len(wangyi_news) > 0

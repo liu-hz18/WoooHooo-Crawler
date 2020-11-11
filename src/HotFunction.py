@@ -1,7 +1,10 @@
 import requests
 import json
 import datetime
+import demjson
+import random
 from bs4 import BeautifulSoup
+from .Scratchtest import handleNewslist
 
 def getHotDetail(hot_top):
     hot_news = []
@@ -14,7 +17,7 @@ def getHotDetail(hot_top):
         news_dict['url'] = news['url']
         news_dict['publish_time'] = news['create_date'] +" "+ news['create_time']
         hot_news.append(news_dict)
-    print(hot_news)
+    #print(hot_news)
     print(len(hot_news))
     return hot_news
 
@@ -65,6 +68,54 @@ def getHotSearch():
         hot_dict['title'] = title_list[i]
         hot_dict['value'] = hot_value_list[i]
         hot_search_list.append(hot_dict)
-    print(hot_search_list)
+    #print(hot_search_list)
     print(len(hot_search_list))
     return hot_search_list
+
+def hot_news_scratch():
+    #爬取腾讯热点新闻
+    tencent_base_url = " https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?"
+    headers = {
+        'accept': '*/*',
+        'accept-encoding': 'gzip, deflate, br',
+        'accept-language': 'zh-CN,zh;q=0.9',
+        'origin': 'https://news.qq.com',
+        'referer': 'https://news.qq.com/',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-site',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36',
+    }
+    params = {
+        'sub_srv_id': '24hours',
+        'srv_id': 'pc',
+        'offset': 0,
+        'limit': 199,
+        'strategy': 1,
+        'ext': "{\"pool\":[\"top\"], \"is_filter\":7, \"check_type\":true}",
+    }
+    tencent_hot_url_list = []
+    response = requests.get(tencent_base_url, params=params, headers=headers)
+    news_list = demjson.decode(response.content)["data"]["list"]
+    for news in news_list:
+        tencent_hot_url_list.append(news['url'])
+    hot_news_list = handleNewslist(0,tencent_hot_url_list)
+    #爬取新浪热点新闻
+    sina_base_url = 'https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid={}&k=&num=50&page={}&r={}'
+    sina_hot_url_list = []
+    r = random.random()
+    hot_request = sina_base_url.format("2509", 1, r)
+    hot_response = requests.get(hot_request)
+    hot_result = json.loads(hot_response.text)
+    hot_data_list = hot_result.get('result').get('data')
+    for news in hot_data_list:
+        url_dict = {}
+        url_dict['url'] = news['url']
+        url_dict['type'] = ''
+        sina_hot_url_list.append(url_dict)
+    hot_news_list.extend(handleNewslist(1,sina_hot_url_list))
+    #print(hot_news_list)
+    print(len(hot_news_list))
+    return hot_news_list
+
+
