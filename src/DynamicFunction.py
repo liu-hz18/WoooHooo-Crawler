@@ -3,7 +3,7 @@ import requests
 import json
 import time
 from bs4 import BeautifulSoup
-from Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText,handleNewslist
+from .Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText,handleNewslist
 import demjson
 
 def get_tencent_channel():

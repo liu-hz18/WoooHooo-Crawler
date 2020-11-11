@@ -1,7 +1,6 @@
 import copy
 import pymongo
 import time
-import requests
 import threading
 from .DynamicFunction import get_tencent_channel,get_sina_channel,get_wangyi_channel,loadTencentNews,loadSinaNews,loadSohuNews,loadWangyiNews,getTypeMap
 R = threading.Lock()
@@ -10,22 +9,21 @@ def save_db(updatedNews):
     Staticdb = myclient["NewsCopy"]
     Staticsave = Staticdb["news"]
     type_map = getTypeMap()
-    while True:
-        count = 0
-        post_news_list = []
-        for news in updatedNews:
-            if (Staticsave.count_documents({"title":news["title"]})==0):
-                post_news_list.append(news)
-                y = Staticsave.insert_one(news)
-                if news['category'] in type_map.keys():
-                    mycol = Staticdb[type_map[news['category']]]
-                    mycol.insert_one(news)
-                count = count+1
-        post_news_dict = {}
-        post_news_dict['news'] = post_news_list
-        #res = requests.post(url=lucene_url, data=post_news_dict)
-        print("not same:"+str(count))
-        print("epoch end")
+    count = 0
+    post_news_list = []
+    for news in updatedNews:
+        if (Staticsave.count_documents({"title":news["title"]})==0):
+            post_news_list.append(news)
+            y = Staticsave.insert_one(news)
+            if news['category'] in type_map.keys():
+                mycol = Staticdb[type_map[news['category']]]
+                mycol.insert_one(news)
+            count = count+1
+    post_news_dict = {}
+    post_news_dict['news'] = post_news_list
+    res = requests.post(url=lucene_url, data=post_news_dict)
+    print("not same:"+str(count))
+    print("epoch end")
 
 class DynamicThread(threading.Thread):  # 继承父类threading.Thread
     def __init__(self, threadID):
@@ -61,6 +59,7 @@ class DynamicThread(threading.Thread):  # 继承父类threading.Thread
         except Exception:
             return None
 
+
 global_count =0
 if __name__ == "__main__":
     # 创建新线程
@@ -75,14 +74,15 @@ if __name__ == "__main__":
             tempThread.join()
         while True:
             if global_count == thread_num:
-                global_count =0
+                global_count = 0
                 break
             time.sleep(5)
+
         updateNews = []
         for i in range(0,thread_num):
             updateNews.extend(threads[i].get_result())
-        print("epoch end")
         print(len(updateNews))
+        save_db(updateNews)
         time.sleep(60)
 
 

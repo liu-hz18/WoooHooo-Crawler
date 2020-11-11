@@ -4,7 +4,7 @@ import datetime
 import demjson
 import random
 from bs4 import BeautifulSoup
-from Scratchtest import handleNewslist
+from .Scratchtest import handleNewslist
 
 def getHotDetail(hot_top):
     hot_news = []
@@ -17,7 +17,7 @@ def getHotDetail(hot_top):
         news_dict['url'] = news['url']
         news_dict['publish_time'] = news['create_date'] +" "+ news['create_time']
         hot_news.append(news_dict)
-    print(hot_news)
+    #print(hot_news)
     print(len(hot_news))
     return hot_news
 
@@ -68,7 +68,7 @@ def getHotSearch():
         hot_dict['title'] = title_list[i]
         hot_dict['value'] = hot_value_list[i]
         hot_search_list.append(hot_dict)
-    print(hot_search_list)
+    #print(hot_search_list)
     print(len(hot_search_list))
     return hot_search_list
 

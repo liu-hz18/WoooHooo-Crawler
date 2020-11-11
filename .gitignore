@@ -21,6 +21,7 @@ venv.bak/
 coverage-reports/
 xunit-reports/
 
+
 **/.DS_Store
 .idea
 .vscode
