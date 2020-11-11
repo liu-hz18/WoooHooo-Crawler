@@ -2,6 +2,7 @@ import copy
 import pymongo
 import time
 import threading
+import requests
 from .DynamicFunction import get_tencent_channel,get_sina_channel,get_wangyi_channel,loadTencentNews,loadSinaNews,loadSohuNews,loadWangyiNews,getTypeMap
 R = threading.Lock()
 def save_db(updatedNews):
@@ -21,7 +22,7 @@ def save_db(updatedNews):
             count = count+1
     post_news_dict = {}
     post_news_dict['news'] = post_news_list
-    res = requests.post(url=lucene_url, data=post_news_dict)
+    #res = requests.post(url=lucene_url, data=post_news_dict)
     print("not same:"+str(count))
     print("epoch end")
 
