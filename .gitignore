@@ -20,7 +20,9 @@ venv.bak/
 .pytest_cache/
 coverage-reports/
 xunit-reports/
-
+src/ClassifyNews.py
+src/multiprocess.py
+src/sortNews.py
 
 **/.DS_Store
 .idea
