@@ -3,14 +3,51 @@ import requests
 import json
 import time
 from bs4 import BeautifulSoup
-from Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText,handleNewslist
+from .Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText,handleNewslist
 import demjson
 
+def get_tencent_channel():
+    #腾讯新闻的各种频道
+    return ['24hours', 'milite', 'cul', 'nstock', 'digi', 'history', 'politics',
+             'newssh', 'edu', 'sports', 'kepu', 'ent', 'world', 'tech', 'finance', 'games']
+
+def get_sina_channel():
+    return {
+        "2510": "politics",  # 时政
+        "2669": "social",  # 社会
+        "2511": "chuguo",  # 国际
+        "2514": "mil",  # 军事
+        "2516": "finance",  # 财经
+        "2518": "finance",
+        "2517": "finance",
+        "2513": "ent",  # 娱乐
+        "2512": "sports",  # 体育
+        "2515": "science",  # 科技
+    }
+    #     "2509": "全部",
+    #     "2510": "国内",
+    #     "2511": "国际",
+    #     "2669": "社会",
+    #     "2512": "体育",
+    #     "2513": "娱乐",
+    #     "2514": "军事",
+    #     "2515": "科技",
+    #     "2516": "财经",
+    #     "2517": "股市",
+    #     "2518": "美股",
+    #     "2968": "国内_国际",
+    #     "2970": "国内_社会",
+    #     "2972": "国际_社会",
+    #     "2974": "国内国际社会"
+def get_wangyi_channel():
+    return {
+        "guonei": "politics",  # 时政
+        "guoji": "chuguo",  # 国际
+        "war": "mil",  # 军事
+    }
+
 #模拟访问腾讯新闻各个首页
-def loadTencentNews():
-    #各种频道
-    channels = ['24hours', 'milite', 'cul', 'nstock','digi','history', 'politics',
-                'zfw','newssh', 'edu','sports', 'kepu', 'ent',  'world', 'tech', 'finance', 'games']
+def loadTencentNews(channel):
     baseurls = " https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?"
     headers = {
         'accept': '*/*',
@@ -27,71 +64,52 @@ def loadTencentNews():
         'sub_srv_id': '24hours',
         'srv_id': 'pc',
         'offset': 0,
-        'limit': 10,
+        'limit': 20,
         'strategy': 1,
         'ext': "{\"pool\":[\"top\"], \"is_filter\":10, \"check_type\":true}",
     }
     urls=[]
-    for index in channels:
+    if channel == "politics":
+        response = requests.get("https://i.news.qq.com/trpc.qqnews_web.pc_base_srv.base_http_proxy/OpenApiSiteList?site=news_news_msh")
+        news_list = demjson.decode(response.content)["data"][0:20]
+        for news in news_list:
+            urls.append(news['url'])
+    else:
         try:
-            params['sub_srv_id']=index
-            response = requests.get(baseurls, params=params, headers=headers)
+            params['sub_srv_id']=channel
+            response = requests.get(baseurls,headers=headers ,params=params)
             news_list = demjson.decode(response.content)["data"]["list"]
             for news in news_list:
                 urls.append(news['url'])
         except:
-            continue
-    return list(set(urls))
+            pass
+    tencent_news_list = list(set(urls))
+    tencent_news = handleNewslist(0, tencent_news_list)
+    return tencent_news
 
 #模拟访问新浪新闻滚动新闻页面
-def loadSinaNewsList():
-    #     "2509": "全部",
-    #     "2510": "国内",
-    #     "2511": "国际",
-    #     "2669": "社会",
-    #     "2512": "体育",
-    #     "2513": "娱乐",
-    #     "2514": "军事",
-    #     "2515": "科技",
-    #     "2516": "财经",
-    #     "2517": "股市",
-    #     "2518": "美股",
-    #     "2968": "国内_国际",
-    #     "2970": "国内_社会",
-    #     "2972": "国际_社会",
-    #     "2974": "国内国际社会"
-    #  可修改  这里设置爬取100页
+def loadSinaNews(channel):
     page_total = 1
-    classify_map = {
-        "2510": "politics",  # 时政
-        "2669": "social",  # 社会
-        "2511": "chuguo",  # 国际
-        "2514": "mil",  # 军事
-        "2516": "finance",  # 财经
-        "2518": "finance",
-        "2517": "finance",
-        "2513": "ent",  # 娱乐
-        "2512": "sports",  # 体育
-        "2515": "science",  # 科技
-    }
     base_url = 'https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid={}&k=&num=50&page={}&r={}'
     url_list = []
-    for lid in classify_map.keys():
-        for page in range(1, page_total+1):
-            r = random.random()
-            Request=base_url.format(lid, page, r)
-            response = requests.get(Request)
-            result = json.loads(response.text)
-            data_list = result.get('result').get('data')
-            for news in data_list:
-                url_dict = {}
-                url_dict['url'] = news['url']
-                url_dict['type'] = classify_map[lid]
-                url_list.append(url_dict)
-    return list(set(url_list))
+    classify_map = get_sina_channel()
+    for page in range(1, page_total+1):
+        r = random.random()
+        Request = base_url.format(channel, page, r)
+        response = requests.get(Request)
+        result = json.loads(response.text)
+        data_list = result.get('result').get('data')
+        for news in data_list:
+            url_dict = {}
+            url_dict['url'] = news['url']
+            url_dict['type'] = classify_map[channel]
+            url_list.append(url_dict)
+    sina_news = handleNewslist(1, url_list)
+    return sina_news
+
 
 #analyzeSohuUrl("https://www.sohu.com")
-def loadSohuNewsList():
+def loadSohuNews():
     base_url="https://www.sohu.com/"
     html = getstandardHTMLText(base_url)
     soup = BeautifulSoup(html, "html.parser")
@@ -102,28 +120,25 @@ def loadSohuNewsList():
     topNews = soup.select("div.list16 > ul > li > a")
     for News in topNews:
         urls.append(News.get("href"))
-    return urls
+    sohu_news = handleNewslist(2, urls)
+    return sohu_news
 
 #得到网易新闻列表中url
-def loadWangyiNewsList():
+def loadWangyiNews(channel):
     base_url = 'https://temp.163.com/special/00804KVA/cm_{}.js?callback=data_callback'
-    classify_map = {
-        "guonei": "politics",  # 时政
-        "guoji": "chuguo",  # 国际
-        "war": "mil",  # 军事
-    }
+    classify_map = get_wangyi_channel()
     url_list = []
-    for classify in classify_map.keys():
-        url = base_url.format(classify)
-        response = requests.get(url)
-        content = response.text
-        result = eval(eval((json.dumps(content)).replace('data_callback(','').replace(')','').replace(' ','')))
-        for news in result:
-            url_dict = {}
-            url_dict['url'] = news["docurl"]
-            url_dict['type'] = classify_map[classify]
-            url_list.append(url_dict)
-    return url_list
+    url = base_url.format(channel)
+    response = requests.get(url)
+    content = response.text
+    result = eval(eval((json.dumps(content)).replace('data_callback(','').replace(')','').replace(' ','')))
+    for news in result:
+        url_dict = {}
+        url_dict['url'] = news["docurl"]
+        url_dict['type'] = classify_map[channel]
+        url_list.append(url_dict)
+    wangyi_news = handleNewslist(3, url_list)
+    return wangyi_news
 
 def getTypeMap():
     return {
@@ -146,23 +161,6 @@ def getTypeMap():
         "game": "game",  # 游戏
     }
 
-def getUpdatedNews(updatedurls,sinaUrl,sohuUrl,wangyiUrl):
-    updatedNews = []
-    if len(updatedurls) != 0:
-        updatedNews.extend(handleNewslist(0, updatedurls))
-    print("tencent end")
-    if len(sinaUrl) != 0:
-        updatedNews.extend(handleNewslist(1, sinaUrl))
-    print("sina end")
-    if len(sohuUrl) != 0:
-        updatedNews.extend(handleNewslist(2, sohuUrl))
-    print("souhu end")
-    if len(wangyiUrl) != 0:
-        updatedNews.extend(handleNewslist(3, wangyiUrl))
-    print("wangyi end")
-    print("total:" + str(len(updatedNews)))
-    return updatedNews
-
 def getClassifyMap():
     return {
         "politics":"politics",#国内
@@ -182,6 +180,5 @@ def getClassifyMap():
         "tech":"science",
         "game":"game",#游戏
     }
-
 
 

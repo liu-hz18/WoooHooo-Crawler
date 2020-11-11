@@ -100,7 +100,10 @@ def analyzeSinaUrl(url_dict):
     publish_time = soup.select('div.date-source span')[0].text
     publish_time = datetime.strptime(publish_time, '%Y年%m月%d日 %H:%M')
     publish_time.strftime('%Y-%m-%d')
-    source =soup.select('div.date-source >a')[0].text  # 获取新闻来源
+    try:
+        source =soup.select('div.date-source >a')[0].text  # 获取新闻来源
+    except:
+        source = ""
     images=soup.select("div.img_wrapper >img")
     imagesurl = []
     for image in images:
