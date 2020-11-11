@@ -164,7 +164,13 @@ disable=print-statement,
         consider-using-enumerate,
         undefined-variable,
         no-self-use,
-        import-error
+        import-error,
+        too-many-public-methods,
+        superfluous-parens,
+        global-statement,
+        chained-comparison,
+        used-before-assignment,
+        attribute-defined-outside-init
         
 
 # Enable the message, report, category or checker with the given id(s). You can

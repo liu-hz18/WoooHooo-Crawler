@@ -130,7 +130,7 @@ class TestScratch:
 
     def test_get_wangyi_channel(self):
         wangyi_channel = get_wangyi_channel()
-        assert len(wangyi_channel)
+        assert len(wangyi_channel) > 0
 
     def test_loadTencentNews(self):
         tencent_news = loadTencentNews('24hours')
