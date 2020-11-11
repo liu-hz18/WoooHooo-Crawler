@@ -1,6 +1,6 @@
 import time
 import pymongo
-from .HotFunction import getHotSearch
+from HotFunction import getHotSearch
 
 if __name__ == "__main__":
     myclient = pymongo.MongoClient("mongodb://localhost:30001/")
