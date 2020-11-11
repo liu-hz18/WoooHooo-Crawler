@@ -1,6 +1,6 @@
 import pymongo
 import time
-from .HotFunction import getHotDetail,getHotClick,getHotComment,getNowDate
+from HotFunction import getHotDetail,getHotClick,getHotComment,getNowDate
 
 if __name__ == "__main__":
     myclient = pymongo.MongoClient("mongodb://localhost:30001/")

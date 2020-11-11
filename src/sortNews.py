@@ -6,14 +6,15 @@ if __name__ == "__main__":
     mydata = newsSet.find().sort([("publish_time", pymongo.DESCENDING)])
     newsCopy = myclient["NewsCopy"]
     saveCopy = newsCopy["news"]
-    title_map={}
     count = 0
+    new_count = 0
     for news in mydata:
-        if news["title"] not in title_map.keys():
-            title_map[news["title"]] = 1
+        if (saveCopy.count_documents({"title": news["title"]}) == 0):
             x = saveCopy.insert_one(news)
+            new_count = new_count + 1
         count = count + 1
         if count % 10000 == 0:
             print(count)
+            print("not same"+str(new_count))
 
 

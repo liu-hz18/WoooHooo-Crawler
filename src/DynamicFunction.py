@@ -3,7 +3,7 @@ import requests
 import json
 import time
 from bs4 import BeautifulSoup
-from Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText
+from Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText,handleNewslist
 import demjson
 
 #模拟访问腾讯新闻各个首页
@@ -27,19 +27,12 @@ def loadTencentNews():
         'sub_srv_id': '24hours',
         'srv_id': 'pc',
         'offset': 0,
-        'limit': 199,
+        'limit': 10,
         'strategy': 1,
         'ext': "{\"pool\":[\"top\"], \"is_filter\":10, \"check_type\":true}",
     }
-    hot_url_list = []
-    response = requests.get(baseurls, params=params, headers=headers)
-    news_list = demjson.decode(response.content)["data"]["list"]
-    for news in news_list:
-        hot_url_list.append(news['url'])
-
-    params['limit'] = 10
     urls=[]
-    for index in channels[1:]:
+    for index in channels:
         try:
             params['sub_srv_id']=index
             response = requests.get(baseurls, params=params, headers=headers)
@@ -48,45 +41,7 @@ def loadTencentNews():
                 urls.append(news['url'])
         except:
             continue
-    return list(set(urls)),hot_url_list
-
-#处理热点新闻列表
-def handleNewslist(type,urls):
-    updatedNews=[]
-    #print(len(urls))
-    for url in urls:
-        #print(url)
-        if type == 0:
-            try:
-                try:
-                    news = loadWithTime(url)
-                except:
-                    format_url = "https://new.qq.com/rain/a/"+url[32:-5]
-                    news = load_tencent_with_a(format_url)
-                updatedNews.append(news)
-                #print(news)
-            except:
-                continue
-        elif type == 1:
-            try:
-                news = analyzeSinaUrl(url)
-                updatedNews.append(news)
-                #print(news)
-            except:
-                continue
-        elif type == 2:
-            try:
-                news = analyzeSohuUrl(url)
-                updatedNews.append(news)
-            except:
-                continue
-        elif type ==3:
-            try:
-                news = analyzeWangyiUrl(url)
-                updatedNews.append(news)
-            except:
-                continue
-    return updatedNews
+    return list(set(urls))
 
 #模拟访问新浪新闻滚动新闻页面
 def loadSinaNewsList():
@@ -120,19 +75,6 @@ def loadSinaNewsList():
         "2515": "science",  # 科技
     }
     base_url = 'https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid={}&k=&num=50&page={}&r={}'
-    hot_url_list = []
-
-    r = random.random()
-    hot_request = base_url.format("2509", 1, r)
-    hot_response = requests.get(hot_request)
-    hot_result = json.loads(hot_response.text)
-    hot_data_list = hot_result.get('result').get('data')
-    for news in hot_data_list:
-        url_dict = {}
-        url_dict['url'] = news['url']
-        url_dict['type'] = ''
-        hot_url_list.append(url_dict)
-
     url_list = []
     for lid in classify_map.keys():
         for page in range(1, page_total+1):
@@ -146,7 +88,7 @@ def loadSinaNewsList():
                 url_dict['url'] = news['url']
                 url_dict['type'] = classify_map[lid]
                 url_list.append(url_dict)
-    return url_list,hot_url_list
+    return list(set(url_list))
 
 #analyzeSohuUrl("https://www.sohu.com")
 def loadSohuNewsList():
@@ -241,10 +183,5 @@ def getClassifyMap():
         "game":"game",#游戏
     }
 
-def get_hot_news(tencent_news,sina_news):
-    hot_news = []
-    hot_news.extend(handleNewslist(0, tencent_news))
-    hot_news.extend(handleNewslist(1, sina_news))
-    return hot_news
 
 

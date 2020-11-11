@@ -212,3 +212,36 @@ def getRandomUrl():
                     randomList.append(temp)
     return randomList
 
+def handleNewslist(type,urls):
+    updatedNews=[]
+    for url in urls:
+        if type == 0:
+            try:
+                try:
+                    news = loadWithTime(url)
+                except:
+                    format_url = "https://new.qq.com/rain/a/"+url[32:-5]
+                    news = load_tencent_with_a(format_url)
+                updatedNews.append(news)
+            except:
+                continue
+        elif type == 1:
+            try:
+                news = analyzeSinaUrl(url)
+                updatedNews.append(news)
+            except:
+                continue
+        elif type == 2:
+            try:
+                news = analyzeSohuUrl(url)
+                updatedNews.append(news)
+            except:
+                continue
+        elif type ==3:
+            try:
+                news = analyzeWangyiUrl(url)
+                updatedNews.append(news)
+            except:
+                continue
+    return updatedNews
+
