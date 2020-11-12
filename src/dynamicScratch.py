@@ -1,20 +1,33 @@
 import copy
 import pymongo
+import json
 import time
 import threading
 import requests
-from .DynamicFunction import get_tencent_channel,get_sina_channel,get_wangyi_channel,loadTencentNews,loadSinaNews,loadSohuNews,loadWangyiNews,getTypeMap
+from DynamicFunction import get_tencent_channel,get_sina_channel,get_wangyi_channel,loadTencentNews,loadSinaNews,loadSohuNews,loadWangyiNews,getTypeMap
 R = threading.Lock()
+
 def save_db(updatedNews):
     myclient = pymongo.MongoClient("mongodb://localhost:30001/")
     Staticdb = myclient["NewsCopy"]
     Staticsave = Staticdb["news"]
     type_map = getTypeMap()
+    url_list = []
+    for news in updatedNews:
+        if news['url'] not in url_list:
+            url_list.append(news['url'])
+        else:
+            updatedNews.remove(news)
+    host = "49.233.52.61"
+    http_prefix = "http:"
+    lucene_url = f"{http_prefix}//localhost:30002/postNews/"
     count = 0
     post_news_list = []
     for news in updatedNews:
+        copy_news = copy.deepcopy(news)
+        #search_news = copy.deepcopy(news)
         if (Staticsave.count_documents({"title":news["title"]})==0):
-            post_news_list.append(news)
+            post_news_list.append(copy_news)
             y = Staticsave.insert_one(news)
             if news['category'] in type_map.keys():
                 mycol = Staticdb[type_map[news['category']]]
@@ -22,7 +35,9 @@ def save_db(updatedNews):
             count = count+1
     post_news_dict = {}
     post_news_dict['news'] = post_news_list
-    #res = requests.post(url=lucene_url, data=post_news_dict)
+    post_news_json = json.dumps(post_news_dict)
+    headers = {'Connection': 'close'}
+    res = requests.post(url=lucene_url, data=post_news_json,headers=headers)
     print("not same:"+str(count))
     print("epoch end")
 
