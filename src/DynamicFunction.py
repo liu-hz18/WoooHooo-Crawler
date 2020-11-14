@@ -3,7 +3,7 @@ import requests
 import json
 import time
 from bs4 import BeautifulSoup
-from .Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText,handleNewslist
+from Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText,handleNewslist
 import demjson
 
 def get_tencent_channel():
@@ -90,6 +90,8 @@ def loadTencentNews(channel):
 #模拟访问新浪新闻滚动新闻页面
 def loadSinaNews(channel):
     page_total = 1
+    sleep_time = random.randint(0,9)
+    time.sleep(sleep_time)
     base_url = 'https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid={}&k=&num=50&page={}&r={}'
     url_list = []
     classify_map = get_sina_channel()

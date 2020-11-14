@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from datetime import datetime
+import time
 
 #得到html文本
 def getHTMLText(url):
@@ -101,9 +102,9 @@ def analyzeSinaUrl(url_dict):
     publish_time = datetime.strptime(publish_time, '%Y年%m月%d日 %H:%M')
     publish_time.strftime('%Y-%m-%d')
     try:
-        source =soup.select('div.date-source >a')[0].text  # 获取新闻来源
+        source ="新浪：" + soup.select('div.date-source >a')[0].text  # 获取新闻来源
     except:
-        source = ""
+        source = "新浪"
     images=soup.select("div.img_wrapper >img")
     imagesurl = []
     for image in images:
@@ -121,7 +122,7 @@ def analyzeSinaUrl(url_dict):
         'publish_time': publish_time.__format__('%Y-%m-%d %H:%M:%S'),
         'content': articleall,
         'category': url_dict['type'],
-        'source': "新浪："+source,
+        'source': source,
         'imageurl': imagesurl,
         'top_img': top_imageurl
     }
@@ -148,7 +149,7 @@ def analyzeSohuUrl(url):
     images=soup.select("article.article> p >img")
     imagesurl = []
     for image in images:
-        imagesurl.append(image.get('src'))
+        imagesurl.append(image.get('src')[5:])
     top_imageurl = ""
     if len(imagesurl) != 0:
         top_imageurl = imagesurl[0]
@@ -186,7 +187,7 @@ def analyzeWangyiUrl(url_dict):
     images = soup.select("div.post_body > p >img")
     imagesurl = []
     for image in images:
-        imagesurl.append(image.get('src'))
+        imagesurl.append(image.get('src')[6:])
     top_imageurl = ""
     if len(imagesurl) != 0:
         top_imageurl = imagesurl[0]
@@ -232,6 +233,7 @@ def handleNewslist(type,urls):
             try:
                 news = analyzeSinaUrl(url)
                 updatedNews.append(news)
+                time.sleep(0.2)
             except:
                 continue
         elif type == 2:
@@ -247,4 +249,3 @@ def handleNewslist(type,urls):
             except:
                 continue
     return updatedNews
-

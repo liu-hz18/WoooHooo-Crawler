@@ -1,6 +1,6 @@
 import pymongo
 import time
-from HotFunction import hot_news_scratch
+from .HotFunction import hot_news_scratch
 
 if __name__ == "__main__":
     myclient = pymongo.MongoClient("mongodb://localhost:30001/")
