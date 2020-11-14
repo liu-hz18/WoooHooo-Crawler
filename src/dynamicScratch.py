@@ -5,39 +5,48 @@ import time
 import threading
 import requests
 from DynamicFunction import get_tencent_channel,get_sina_channel,get_wangyi_channel,loadTencentNews,loadSinaNews,loadSohuNews,loadWangyiNews,getTypeMap
+from HotFunction import hot_news_scratch
 R = threading.Lock()
 
-def save_db(updatedNews):
+def save_db(updatedNews,hot_news):
     myclient = pymongo.MongoClient("mongodb://localhost:30001/")
     Staticdb = myclient["NewsCopy"]
     Staticsave = Staticdb["news"]
+    hot_save = Staticdb["hot"]
     type_map = getTypeMap()
-    url_list = []
-    for news in updatedNews:
-        if news['url'] not in url_list:
-            url_list.append(news['url'])
-        else:
-            updatedNews.remove(news)
-    host = "49.233.52.61"
+    hot_save.drop()
+    for news in hot_news:
+        copy_news = copy.deepcopy(news)
+        x = hot_save.insert_one(copy_news)
+    updateNews.extend(hot_news)
     http_prefix = "http:"
-    lucene_url = f"{http_prefix}//localhost:30002/postNews/"
+    host = "49.233.52.61"
+    lucene_url = f"{http_prefix}//{host}:30002/postNews/"
     count = 0
     post_news_list = []
     for news in updatedNews:
         copy_news = copy.deepcopy(news)
-        #search_news = copy.deepcopy(news)
-        if (Staticsave.count_documents({"title":news["title"]})==0):
-            post_news_list.append(copy_news)
-            y = Staticsave.insert_one(news)
-            if news['category'] in type_map.keys():
-                mycol = Staticdb[type_map[news['category']]]
-                mycol.insert_one(news)
-            count = count+1
+        search_news = copy.deepcopy(news)
+        if (Staticsave.count_documents({"url":news["url"]})==0):
+            if(Staticsave.count_documents({"title":search_news["title"]})==0):
+                post_news_list.append(copy_news)
+                y = Staticsave.insert_one(news)
+                if news['category'] in type_map.keys():
+                    mycol = Staticdb[type_map[news['category']]]
+                    try:
+                        mycol.insert_one(news)
+                    except:
+                        pass
+                count = count+1
     post_news_dict = {}
     post_news_dict['news'] = post_news_list
     post_news_json = json.dumps(post_news_dict)
     headers = {'Connection': 'close'}
-    res = requests.post(url=lucene_url, data=post_news_json,headers=headers)
+    try:
+        res = requests.post(url=lucene_url, data=post_news_json,headers=headers)
+        print("success post")
+    except:
+        pass
     print("not same:"+str(count))
     print("epoch end")
 
@@ -58,7 +67,10 @@ class DynamicThread(threading.Thread):  # 继承父类threading.Thread
         if rank < len(tencent_channel):
             updatedNews = loadTencentNews(tencent_channel[rank])
         elif rank >= len(tencent_channel) and rank<(len(tencent_channel)+len(sina_channel_keys)):
-            updatedNews = loadSinaNews(sina_channel_keys[rank-len(tencent_channel)])
+            try:
+                updatedNews = loadSinaNews(sina_channel_keys[rank-len(tencent_channel)])
+            except:
+                updatedNews = []
         elif rank == (len(tencent_channel)+len(sina_channel_keys)):
             updatedNews = loadSohuNews()
         else:
@@ -97,8 +109,9 @@ if __name__ == "__main__":
         updateNews = []
         for i in range(0,thread_num):
             updateNews.extend(threads[i].get_result())
-        print(len(updateNews))
-        save_db(updateNews)
+        hot_news = hot_news_scratch()
+        print(len(updateNews)+len(hot_news))
+        save_db(updateNews,hot_news)
         time.sleep(60)
 
 

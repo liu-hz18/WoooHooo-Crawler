@@ -4,7 +4,7 @@ import datetime
 import demjson
 import random
 from bs4 import BeautifulSoup
-from .Scratchtest import handleNewslist
+from Scratchtest import handleNewslist
 
 def getHotDetail(hot_top):
     hot_news = []
@@ -114,6 +114,18 @@ def hot_news_scratch():
         url_dict['type'] = ''
         sina_hot_url_list.append(url_dict)
     hot_news_list.extend(handleNewslist(1,sina_hot_url_list))
+    url_list = []
+    for news in hot_news_list:
+        if news['url'] not in url_list:
+            url_list.append(news['url'])
+        else:
+            hot_news_list.remove(news)
+    title_list = []
+    for news in hot_news_list:
+        if news['title'] not in title_list:
+            title_list.append(news['title'])
+        else:
+            hot_news_list.remove(news)
     #print(hot_news_list)
     print(len(hot_news_list))
     return hot_news_list

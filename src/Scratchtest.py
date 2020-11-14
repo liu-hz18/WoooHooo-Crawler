@@ -149,7 +149,7 @@ def analyzeSohuUrl(url):
     images=soup.select("article.article> p >img")
     imagesurl = []
     for image in images:
-        imagesurl.append(image.get('src'))
+        imagesurl.append(image.get('src')[5:])
     top_imageurl = ""
     if len(imagesurl) != 0:
         top_imageurl = imagesurl[0]
@@ -187,7 +187,7 @@ def analyzeWangyiUrl(url_dict):
     images = soup.select("div.post_body > p >img")
     imagesurl = []
     for image in images:
-        imagesurl.append(image.get('src'))
+        imagesurl.append(image.get('src')[6:])
     top_imageurl = ""
     if len(imagesurl) != 0:
         top_imageurl = imagesurl[0]
@@ -249,4 +249,3 @@ def handleNewslist(type,urls):
             except:
                 continue
     return updatedNews
-
