@@ -3,7 +3,7 @@ import requests
 import json
 import time
 from bs4 import BeautifulSoup
-from Scratchtest import loadWithTime,load_tencent_with_a,analyzeSinaUrl,analyzeWangyiUrl,analyzeSohuUrl,getHTMLText,getstandardHTMLText,handleNewslist
+from .Scratchtest import get_standard_html_text,handle_news_list
 import demjson
 
 def get_tencent_channel():
@@ -47,7 +47,7 @@ def get_wangyi_channel():
     }
 
 #模拟访问腾讯新闻各个首页
-def loadTencentNews(channel):
+def load_tencent_news(channel):
     baseurls = " https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?"
     headers = {
         'accept': '*/*',
@@ -81,14 +81,14 @@ def loadTencentNews(channel):
             news_list = demjson.decode(response.content)["data"]["list"]
             for news in news_list:
                 urls.append(news['url'])
-        except:
+        except Exception:
             pass
     tencent_news_list = list(set(urls))
-    tencent_news = handleNewslist(0, tencent_news_list)
+    tencent_news = handle_news_list(0, tencent_news_list)
     return tencent_news
 
 #模拟访问新浪新闻滚动新闻页面
-def loadSinaNews(channel):
+def load_sina_news(channel):
     page_total = 1
     sleep_time = random.randint(0,9)
     time.sleep(sleep_time)
@@ -97,8 +97,8 @@ def loadSinaNews(channel):
     classify_map = get_sina_channel()
     for page in range(1, page_total+1):
         r = random.random()
-        Request = base_url.format(channel, page, r)
-        response = requests.get(Request)
+        sina_request = base_url.format(channel, page, r)
+        response = requests.get(sina_request)
         result = json.loads(response.text)
         data_list = result.get('result').get('data')
         for news in data_list:
@@ -106,27 +106,27 @@ def loadSinaNews(channel):
             url_dict['url'] = news['url']
             url_dict['type'] = classify_map[channel]
             url_list.append(url_dict)
-    sina_news = handleNewslist(1, url_list)
+    sina_news = handle_news_list(1, url_list)
     return sina_news
 
 
 #analyzeSohuUrl("https://www.sohu.com")
-def loadSohuNews():
+def load_sohu_news():
     base_url="https://www.sohu.com/"
-    html = getstandardHTMLText(base_url)
+    html = get_standard_html_text(base_url)
     soup = BeautifulSoup(html, "html.parser")
     urls = []
-    partyNews = soup.select("div.news > p > a")
-    for News in partyNews:
-        urls.append(News.get("href"))
-    topNews = soup.select("div.list16 > ul > li > a")
-    for News in topNews:
-        urls.append(News.get("href"))
-    sohu_news = handleNewslist(2, urls)
+    party_news = soup.select("div.news > p > a")
+    for news in party_news:
+        urls.append(news.get("href"))
+    top_news = soup.select("div.list16 > ul > li > a")
+    for news in top_news:
+        urls.append(news.get("href"))
+    sohu_news = handle_news_list(2, urls)
     return sohu_news
 
 #得到网易新闻列表中url
-def loadWangyiNews(channel):
+def load_wangyi_news(channel):
     base_url = 'https://temp.163.com/special/00804KVA/cm_{}.js?callback=data_callback'
     classify_map = get_wangyi_channel()
     url_list = []
@@ -139,10 +139,10 @@ def loadWangyiNews(channel):
         url_dict['url'] = news["docurl"]
         url_dict['type'] = classify_map[channel]
         url_list.append(url_dict)
-    wangyi_news = handleNewslist(3, url_list)
+    wangyi_news = handle_news_list(3, url_list)
     return wangyi_news
 
-def getTypeMap():
+def get_type_map():
     return {
         "politics": "politics",  # 时政
         "history": "history",  # 文化
@@ -163,7 +163,7 @@ def getTypeMap():
         "game": "game",  # 游戏
     }
 
-def getClassifyMap():
+def get_classify_map():
     return {
         "politics":"politics",#国内
         "history":"history",#文化

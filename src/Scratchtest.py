@@ -5,28 +5,27 @@ from datetime import datetime
 import time
 
 #得到html文本
-def getHTMLText(url):
+def get_html_text(url):
     try:
-        #r = requests.get(url, timeout = 30,allow_redirects=False)
         r = requests.get(url, timeout=30)
         r.raise_for_status()
         return r.text
-    except:
+    except Exception:
         return ""
 
 #得到HTML文本
-def getstandardHTMLText(url):
+def get_standard_html_text(url):
     try:
         r = requests.get(url, timeout = 30,allow_redirects=False)
         r.encoding = 'utf-8'
         r.raise_for_status()
         return r.text
-    except:
+    except Exception:
         return ""
 
 #for links like http://new.qq.com/omn/time/newsID.html
-def loadWithTime(url):
-    html = getHTMLText(url)
+def load_with_time(url):
+    html = get_html_text(url)
     soup = BeautifulSoup(html, "html.parser")
     title = soup.select("div.LEFT > h1")
     paras = soup.select("div.content-article > p.one-p")
@@ -60,7 +59,7 @@ def loadWithTime(url):
 
 #解析rain/a形式的腾讯新闻
 def load_tencent_with_a(url):
-    html = getHTMLText(url)
+    html = get_html_text(url)
     soup = BeautifulSoup(html, "html.parser")
     title = soup.select("div.LEFT > h1")[0].text
     temp = json.loads(soup.findAll('script')[5].contents[0].split("=")[-1])
@@ -93,9 +92,9 @@ def load_tencent_with_a(url):
     return article
 
 #解析新浪新闻
-def analyzeSinaUrl(url_dict):
+def analyze_sina_url(url_dict):
     url = url_dict['url']
-    html = getstandardHTMLText(url)
+    html = get_standard_html_text(url)
     soup = BeautifulSoup(html, "html.parser")
     title = soup.select('h1.main-title')[0].text
     publish_time = soup.select('div.date-source span')[0].text
@@ -103,7 +102,7 @@ def analyzeSinaUrl(url_dict):
     publish_time.strftime('%Y-%m-%d')
     try:
         source ="新浪：" + soup.select('div.date-source >a')[0].text  # 获取新闻来源
-    except:
+    except Exception:
         source = "新浪"
     images=soup.select("div.img_wrapper >img")
     imagesurl = []
@@ -129,8 +128,8 @@ def analyzeSinaUrl(url_dict):
     return res_dict
 
 #解析搜狐新闻详情页
-def analyzeSohuUrl(url):
-    html = getstandardHTMLText(url)
+def analyze_sohu_url(url):
+    html = get_standard_html_text(url)
     soup = BeautifulSoup(html, "html.parser")
     p = soup.select("article.article>p")
     timesource = soup.select("div.article-info > span")
@@ -142,10 +141,10 @@ def analyzeSohuUrl(url):
     p.pop(-1)
     p.pop(-1)
     article = []  # 获取文章内容
-    for singleP in p:
-        if singleP.text!="":
-            article.append(singleP.text)
-    articleall = ''.join(article)
+    for single_p in p:
+        if single_p.text!="":
+            article.append(single_p.text)
+    article_all = ''.join(article)
     images=soup.select("article.article> p >img")
     imagesurl = []
     for image in images:
@@ -157,7 +156,7 @@ def analyzeSohuUrl(url):
         'url': url,
         'title': title,
         'publish_time': publish_time,
-        'content': articleall,
+        'content': article_all,
         'category': "",
         'source': "搜狐："+source,
         'imageurl': imagesurl,
@@ -166,9 +165,9 @@ def analyzeSohuUrl(url):
     return res_dict
 
 #解析网易新闻
-def analyzeWangyiUrl(url_dict):
+def analyze_wangyi_url(url_dict):
     url = url_dict['url']
-    html = getHTMLText(url)
+    html = get_html_text(url)
     soup = BeautifulSoup(html, "html.parser")
     title = soup.select('div.post_main > h1')[0].text
     sourcetime = soup.select('div.post_info')[0].text
@@ -179,11 +178,11 @@ def analyzeWangyiUrl(url_dict):
     source = source[0:-2]
     article = []  # 获取文章内容
     p = soup.select('div.post_body >p')
-    for singleP in p:
-        if singleP.text != "":
-            article.append(singleP.text[2:])
-    articleall = ''.join(article)
-    articleall.strip()
+    for single_p in p:
+        if single_p.text != "":
+            article.append(single_p.text[2:])
+    article_all = ''.join(article)
+    article_all.strip()
     images = soup.select("div.post_body > p >img")
     imagesurl = []
     for image in images:
@@ -195,7 +194,7 @@ def analyzeWangyiUrl(url_dict):
         'url': url,
         'title': title,
         'publish_time': publish_time,
-        'content': articleall,
+        'content': article_all,
         'category': url_dict['type'],
         'source': "网易："+source,
         'imageurl': imagesurl,
@@ -204,48 +203,48 @@ def analyzeWangyiUrl(url_dict):
     return res_dict
 
 #得到四位随机数序列的所有组合形式
-def getRandomUrl():
-    elementList=['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J',
+def get_random_url():
+    element_list=['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J',
                  'K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-    randomList=[]
-    for i in elementList:
-        for j in elementList:
-            for k in elementList:
-                for l in elementList:
+    random_list=[]
+    for i in element_list:
+        for j in element_list:
+            for k in element_list:
+                for l in element_list:
                     temp=i+j+k+l
-                    randomList.append(temp)
-    return randomList
+                    random_list.append(temp)
+    return random_list
 
-def handleNewslist(type,urls):
-    updatedNews=[]
+def handle_news_list(type,urls):
+    updated_news=[]
     for url in urls:
         if type == 0:
             try:
                 try:
-                    news = loadWithTime(url)
-                except:
+                    news = load_with_time(url)
+                except Exception:
                     format_url = "https://new.qq.com/rain/a/"+url[32:-5]
                     news = load_tencent_with_a(format_url)
-                updatedNews.append(news)
+                updated_news.append(news)
             except:
                 continue
         elif type == 1:
             try:
-                news = analyzeSinaUrl(url)
-                updatedNews.append(news)
+                news = analyze_sina_url(url)
+                updated_news.append(news)
                 time.sleep(0.2)
-            except:
+            except Exception:
                 continue
         elif type == 2:
             try:
-                news = analyzeSohuUrl(url)
-                updatedNews.append(news)
-            except:
+                news = analyze_sohu_url(url)
+                updated_news.append(news)
+            except Exception:
                 continue
         elif type ==3:
             try:
-                news = analyzeWangyiUrl(url)
-                updatedNews.append(news)
-            except:
+                news = analyze_wangyi_url(url)
+                updated_news.append(news)
+            except Exception:
                 continue
-    return updatedNews
+    return updated_news
