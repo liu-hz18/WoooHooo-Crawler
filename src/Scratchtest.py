@@ -226,7 +226,7 @@ def handle_news_list(type,urls):
                     format_url = "https://new.qq.com/rain/a/"+url[32:-5]
                     news = load_tencent_with_a(format_url)
                 updated_news.append(news)
-            except:
+            except Exception:
                 continue
         elif type == 1:
             try:

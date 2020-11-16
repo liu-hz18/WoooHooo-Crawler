@@ -7,13 +7,13 @@ from .dynamicScratch import save_db,DynamicThread
 
 class TestScratch:
     def test_get_html_text(self):
-        url_base = "https://new.qq.com/rain/a/20201107A037ZB00"
+        url_base = "https://new.qq.com/omn/20201116/20201116A0ERHP00.html"
         result = get_html_text(url_base)
         r = requests.get(url_base, allow_redirects=False)
         assert result == r.text
 
     def test_get_standard_html_text(self):
-        url_base = "https://new.qq.com/rain/a/20201107A037ZB00"
+        url_base = "https://new.qq.com/omn/20201116/20201116A0E9DR00.html"
         result = get_standard_html_text(url_base)
         r = requests.get(url_base, allow_redirects=False)
         r.encoding = 'utf-8'
@@ -94,13 +94,13 @@ class TestScratch:
             assert 'value' in news.keys()
 
     def test_get_hot_click(self):
-        nowDate = get_now_date()
-        hot_click = get_hot_click(nowDate)
+        now_date = get_now_date()
+        hot_click = get_hot_click(now_date)
         assert len(hot_click) > 0
 
     def test_get_hot_detail(self):
-        nowDate = get_now_date()
-        hot_comment = get_hot_comment(nowDate)
+        now_date = get_now_date()
+        hot_comment = get_hot_comment(now_date)
         hot_comment_news = get_hot_detail(hot_comment)[0:10]
         for index in hot_comment_news:
             assert 'rank' in index.keys()
