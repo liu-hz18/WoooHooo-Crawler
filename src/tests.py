@@ -13,7 +13,7 @@ class TestScratch:
         assert result == r.text
 
     def test_get_standard_html_text(self):
-        url_base = "https://new.qq.com/omn/20201116/20201116A0E9DR00.html"
+        url_base = "https://finance.sina.com.cn/roll/2020-11-16/doc-iiznctke1777176.shtml"
         result = get_standard_html_text(url_base)
         r = requests.get(url_base, allow_redirects=False)
         r.encoding = 'utf-8'

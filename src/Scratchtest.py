@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 import time
 
+html_parser = "html.parser"
 #得到html文本
 def get_html_text(url):
     try:
@@ -26,7 +27,7 @@ def get_standard_html_text(url):
 #for links like http://new.qq.com/omn/time/newsID.html
 def load_with_time(url):
     html = get_html_text(url)
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, html_parser)
     title = soup.select("div.LEFT > h1")
     paras = soup.select("div.content-article > p.one-p")
     textcontent = ""
@@ -60,7 +61,7 @@ def load_with_time(url):
 #解析rain/a形式的腾讯新闻
 def load_tencent_with_a(url):
     html = get_html_text(url)
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, html_parser)
     title = soup.select("div.LEFT > h1")[0].text
     temp = json.loads(soup.findAll('script')[5].contents[0].split("=")[-1])
     publish_time = temp['pubtime']
@@ -95,7 +96,7 @@ def load_tencent_with_a(url):
 def analyze_sina_url(url_dict):
     url = url_dict['url']
     html = get_standard_html_text(url)
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, html_parser)
     title = soup.select('h1.main-title')[0].text
     publish_time = soup.select('div.date-source span')[0].text
     publish_time = datetime.strptime(publish_time, '%Y年%m月%d日 %H:%M')
@@ -130,7 +131,7 @@ def analyze_sina_url(url_dict):
 #解析搜狐新闻详情页
 def analyze_sohu_url(url):
     html = get_standard_html_text(url)
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, html_parser)
     p = soup.select("article.article>p")
     timesource = soup.select("div.article-info > span")
     publish_time = timesource[0].text
@@ -168,7 +169,7 @@ def analyze_sohu_url(url):
 def analyze_wangyi_url(url_dict):
     url = url_dict['url']
     html = get_html_text(url)
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, html_parser)
     title = soup.select('div.post_main > h1')[0].text
     sourcetime = soup.select('div.post_info')[0].text
     sourcetime = sourcetime.strip()
