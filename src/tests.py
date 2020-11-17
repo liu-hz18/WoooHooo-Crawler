@@ -7,7 +7,7 @@ from .dynamicScratch import save_db,DynamicThread
 
 class TestScratch:
     def test_get_html_text(self):
-        url_base = "https://new.qq.com/omn/20201116/20201116A0ERHP00.html"
+        url_base = "https://new.qq.com/rain/a/20201115A0BGJQ00"
         result = get_html_text(url_base)
         r = requests.get(url_base, allow_redirects=False)
         assert result == r.text
