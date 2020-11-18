@@ -3,9 +3,19 @@ import requests
 from .Scratchtest import get_html_text,get_standard_html_text,load_with_time,load_tencent_with_a,analyze_sina_url,analyze_sohu_url,analyze_wangyi_url,get_random_url,handle_news_list
 from .HotFunction import get_hot_search,get_hot_detail,get_hot_click,get_hot_comment,get_now_date,hot_news_scratch
 from .DynamicFunction import get_type_map,get_classify_map,get_tencent_channel,get_sina_channel,get_wangyi_channel,load_tencent_news,load_sina_news,load_sohu_news,load_wangyi_news
-from .dynamicScratch import save_db,DynamicThread
+from .dynamicScratch import DynamicThread
 
 class TestScratch:
+    def test_dynamic_thread(self):
+        thread_num = [0,1,2]
+        threads = []
+        for i in thread_num:
+            temp_thread = DynamicThread(i)
+            temp_thread.start()
+            threads.append(temp_thread)
+        for temp_thread in threads:
+            temp_thread.join()
+
     def test_get_html_text(self):
         url_base = "https://new.qq.com/rain/a/20201115A0BGJQ00"
         result = get_html_text(url_base)
@@ -147,3 +157,4 @@ class TestScratch:
     def test_load_wangyi_news(self):
         wangyi_news = load_wangyi_news("guonei")
         assert len(wangyi_news) > 0
+
