@@ -4,9 +4,9 @@ import datetime
 import demjson
 import random
 from bs4 import BeautifulSoup
-from .Scratchtest import handleNewslist
+from .Scratchtest import handle_news_list
 
-def getHotDetail(hot_top):
+def get_hot_detail(hot_top):
     hot_news = []
     count = 0
     for news in hot_top:
@@ -22,32 +22,32 @@ def getHotDetail(hot_top):
     return hot_news
 
 
-def getHotClick(todayDate):
+def get_hot_click(today_date):
     base_url = "http://top.news.sina.com.cn/ws/GetTopDataList.php?top_type=day&top_cat=www_www_all_suda_suda&top_time={}&top_show_num=100&top_order=DESC&js_var=all_1_data01"
-    Request = base_url.format(todayDate)
-    response = requests.get(Request)
+    hot_request = base_url.format(today_date)
+    response = requests.get(hot_request)
     response.encoding = 'utf-8'
     content = response.text
     result = eval(json.dumps(content).replace('var all_1_data01 = ', '').replace(';',''))
     hot_click = json.loads(result)['data']
     return hot_click
 
-def getHotComment(todayDate):
+def get_hot_comment(today_date):
     base_url = "http://top.news.sina.com.cn/ws/GetTopDataList.php?top_type=day&top_cat=qbpdpl&top_time={}&top_show_num=100&top_order=DESC&js_var=comment_all_data"
-    Request = base_url.format(todayDate)
-    response = requests.get(Request)
+    hot_request = base_url.format(today_date)
+    response = requests.get(hot_request)
     response.encoding = 'utf-8'
     content = response.text
     result = eval(json.dumps(content).replace('var comment_all_data = ', '').replace(';',''))
     hot_comment = json.loads(result)['data']
     return hot_comment
 
-def getNowDate():
-    nowDate = str(datetime.datetime.now())
-    nowDate = nowDate.replace('-', '')[:8]
-    return nowDate
+def get_now_date():
+    now_date = str(datetime.datetime.now())
+    now_date = now_date.replace('-', '')[:8]
+    return now_date
 
-def getHotSearch():
+def get_hot_search():
     base_url = "http://top.baidu.com/buzz?b=2"
     response = requests.get(base_url)
     response.raise_for_status()
@@ -99,7 +99,7 @@ def hot_news_scratch():
     news_list = demjson.decode(response.content)["data"]["list"]
     for news in news_list:
         tencent_hot_url_list.append(news['url'])
-    hot_news_list = handleNewslist(0,tencent_hot_url_list)
+    hot_news_list = handle_news_list(0,tencent_hot_url_list)
     #爬取新浪热点新闻
     sina_base_url = 'https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid={}&k=&num=50&page={}&r={}'
     sina_hot_url_list = []
@@ -113,7 +113,19 @@ def hot_news_scratch():
         url_dict['url'] = news['url']
         url_dict['type'] = ''
         sina_hot_url_list.append(url_dict)
-    hot_news_list.extend(handleNewslist(1,sina_hot_url_list))
+    hot_news_list.extend(handle_news_list(1,sina_hot_url_list))
+    url_list = []
+    for news in hot_news_list:
+        if news['url'] not in url_list:
+            url_list.append(news['url'])
+        else:
+            hot_news_list.remove(news)
+    title_list = []
+    for news in hot_news_list:
+        if news['title'] not in title_list:
+            title_list.append(news['title'])
+        else:
+            hot_news_list.remove(news)
     #print(hot_news_list)
     print(len(hot_news_list))
     return hot_news_list

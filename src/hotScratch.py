@@ -1,6 +1,6 @@
 import pymongo
 import time
-from HotFunction import getHotDetail,getHotClick,getHotComment,getNowDate
+from .HotFunction import get_hot_detail,get_hot_click,get_hot_comment,get_now_date
 
 if __name__ == "__main__":
     myclient = pymongo.MongoClient("mongodb://localhost:30001/")
@@ -8,11 +8,11 @@ if __name__ == "__main__":
     hot_click_save = Staticdb["hot_click"]
     hot_comment_save = Staticdb["hot_comment"]
     while True:
-        nowDate = getNowDate()
-        hot_click = getHotClick(nowDate)
-        hot_comment = getHotComment(nowDate)
-        hot_click_news = getHotDetail(hot_click)[0:10]
-        hot_comment_news = getHotDetail(hot_comment)[0:10]
+        nowDate = get_now_date()
+        hot_click = get_hot_click(nowDate)
+        hot_comment = get_hot_comment(nowDate)
+        hot_click_news = get_hot_detail(hot_click)[0:10]
+        hot_comment_news = get_hot_detail(hot_comment)[0:10]
         delete_x = hot_click_save.delete_many({})
         delete_y = hot_comment_save.delete_many({})
         save_x = hot_click_save.insert_many(hot_click_news)
