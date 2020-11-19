@@ -113,7 +113,9 @@ def analyze_sina_url(url_dict):
     if len(imagesurl)!=0:
         top_imageurl = imagesurl[0]
     article = []  # 获取文章内容
-    for p in soup.select('div.article >p'):
+    if len(soup.select('div.article > p'))==0:
+        raise Exception
+    for p in soup.select('div.article > p'):
         article.append(p.text[2:])
     articleall = ''.join(article)
     res_dict = {
